@@ -3,9 +3,9 @@ import cors from 'cors';
 import path from 'path';
 import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
-
 import dotenv from 'dotenv';
 dotenv.config();
+import schoolRoutes from './src/Routes/schoolRoutes';
 
 
 const app: Application = express();
@@ -39,8 +39,10 @@ const apiLimiter = rateLimit({
 
 app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));
 
-// Test route
-app.get('/api/test', (req: Request, res: Response) => {
+app.use('/api/v1/schools/', schoolRoutes);
+
+// v1 route
+app.get('/api/v1/', (req: Request, res: Response) => {
   res.status(200).json({ message: 'MongoDB connection successful' });
 });
 
