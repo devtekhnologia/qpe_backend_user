@@ -6,12 +6,14 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
 import schoolRoutes from './src/Routes/schoolRoutes';
-
+import userRoutes from './src/Routes/userRoutes'  
 
 const app: Application = express();
 
 // MongoDB connection
 const mongoURI = process.env.MONGO_URI
+
+console.log(mongoURI)
 
 
 if (!mongoURI) {
@@ -40,6 +42,7 @@ const apiLimiter = rateLimit({
 app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));
 
 app.use('/api/v1/schools/', schoolRoutes);
+app.use('/api/v1/users/', userRoutes);
 
 // v1 route
 app.get('/api/v1/', (req: Request, res: Response) => {
