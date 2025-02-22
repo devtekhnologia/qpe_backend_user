@@ -52,7 +52,7 @@ const UserService = {
       expiresIn: "1d",
     });
 
-    return { ...user.toObject(), token };
+    return { token };
   }
 
 
