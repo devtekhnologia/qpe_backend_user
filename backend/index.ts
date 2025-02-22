@@ -5,16 +5,14 @@ import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
-import schoolRoutes from './src/Routes/schoolRoutes';
 import userRoutes from './src/Routes/userRoutes'  
+import schoolRoutes from './src/Routes/schoolRoutes';
+import classRoutes from './src/Routes/classRoutes';
 
 const app: Application = express();
 
 // MongoDB connection
 const mongoURI = process.env.MONGO_URI
-
-console.log(mongoURI)
-
 
 if (!mongoURI) {
   console.error('MongoDB connection string (MONGO_URI) is not defined in environment variables.');
@@ -24,7 +22,6 @@ if (!mongoURI) {
 mongoose.connect(mongoURI, {})
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
-
 
 // Middleware
 app.use(cors());
@@ -41,8 +38,9 @@ const apiLimiter = rateLimit({
 
 app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));
 
-app.use('/api/v1/schools/', schoolRoutes);
 app.use('/api/v1/users/', userRoutes);
+app.use('/api/v1/schools/', schoolRoutes);
+app.use('/api/v1/class/', classRoutes);
 
 // v1 route
 app.get('/api/v1/', (req: Request, res: Response) => {

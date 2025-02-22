@@ -77,14 +77,18 @@
 
 import { Request, Response, NextFunction } from "express";
 import { SchoolService } from "../Services/schoolService";
+import { ApiResponse } from "../Utils/response";
 
 export const SchoolController = {
-    createSchool: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    createSchool: async (req: Request, res: Response, next: NextFunction): Promise<any | void> => {
         try {
             const school = await SchoolService.createSchool(req.body);
-            res.status(201).json(school);
+            if (school instanceof ApiResponse) {
+                return res.status(school.statusCode).json(school);
+            }
+            res.status(201).json(ApiResponse.created("School Created successfully", school));
         } catch (error: any) {
-            next({ status: 400, message: error.errors }); // Correct error handling
+            res.status(400).json(ApiResponse.badRequest(error.message));
         }
     },
 

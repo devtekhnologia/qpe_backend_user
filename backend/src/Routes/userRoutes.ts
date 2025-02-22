@@ -1,18 +1,21 @@
-import { Router } from "express";
-import {UserController} from "../Controllers/userController"; // ✅ No need to import as a class
 
-// const router = Router();
-// import UserController from "../Controllers/userController"; // ✅ Correct way for default export
+
+
+
+
+import { Router } from "express";
+import { UserController } from "../Controllers/userController";
+import { validateRequest } from "../Middlewares/validateMiddleware";
+
+
+import { registerUserSchema } from "../Schema/userSchema"; 
 
 const router = Router();
-router.post("/register", UserController.register);
+
+router.post("/register", validateRequest(registerUserSchema), UserController.register);
 router.post("/login", UserController.login);
 
 export default router;
-
-
-
-
 
 
 
