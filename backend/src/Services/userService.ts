@@ -10,13 +10,11 @@ const UserService = {
     if (!name || !email || !password) {
       return ApiResponse.badRequest("All fields are required: name, email, password");
     }
-
     // Check if the user already exists
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       return ApiResponse.success("User already exists");
     }
-
     // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -54,7 +52,6 @@ const UserService = {
 
     return { token };
   }
-
 
 };
 

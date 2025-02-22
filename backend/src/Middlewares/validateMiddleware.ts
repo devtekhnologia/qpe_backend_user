@@ -7,7 +7,7 @@ export const validateRequest = (schema: ZodSchema) => {
         if (!result.success) {
             return res.status(400).json({ errors: result.error.format() });
         }
-        next(); // Ensure next() is properly called
+        next(); 
     };
 };
  
