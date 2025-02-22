@@ -1,13 +1,13 @@
-import { ISchool } from "../Interfaces/schoolInterface";
+import { ASchool, USchool } from "../Interfaces/schoolInterface";
 import School from "../Models/schoolModel";
 import { getEpochTime } from "../Utils/epochTime";
 
 export const SchoolService = {
-    createSchool: async (schoolData: Partial<ISchool> & { user_id: string }) => {
+    createSchool: async (schoolData: Partial<ASchool> & { user_id: string }) => {
         const school = new School({
             name: schoolData.name,
             institute_id: schoolData.institute_id,
-            status: schoolData.status,
+            status: 1,
             created_by: schoolData.user_id, // Mapping user_id to created_by
             created_at: getEpochTime(), // Setting created_at as epoch time
         });
@@ -15,21 +15,30 @@ export const SchoolService = {
     },
 
     getSchools: async (instituteId: string) => {
-        return await School.find({ institute_id: instituteId }); // Filter by institute_id
+        return await School.find({ institute_id: instituteId, status: 1 }); // Filter by institute_id
     },
 
-    updateSchool: async (schoolData: Partial<ISchool>) => {
-        return await School.findByIdAndUpdate(schoolData, { new: true });
+    updateSchool: async (schoolData: Partial<USchool>) => {
+        const _id = (schoolData as { _id?: string })._id; // Explicit assertion
+        if (!_id) {
+            throw new Error("School ID (_id) is required for updating.");
+        }
+
+        // Ensure updated_by is set to user_id
+        const updateData = {
+            ...schoolData,
+            status: 1,
+            updated_by: schoolData.user_id, // Set updated_by from user_id
+            updated_at: getEpochTime(),
+        };
+
+        return await School.findByIdAndUpdate(_id, updateData, { new: true });
     },
-    // updateSchool: async (schoolData: Partial<ISchool>) => {
-    //     const { _id, ...updateFields } = schoolData;
-    //     if (!_id) {
-    //         throw new Error("School ID (_id) is required for updating.");
-    //     }
-    //     return await School.findByIdAndUpdate(_id, updateFields, { new: true });
-    // },
+
 
     deleteSchool: async (id: string) => {
-        return await School.findByIdAndDelete(id);
+        // return await School.findByIdAndDelete(id);
+        return await School.findByIdAndUpdate(id, { status: 0 }, { new: true });
+
     }
 }
