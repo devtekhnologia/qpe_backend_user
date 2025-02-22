@@ -39,6 +39,5 @@ export const SchoolService = {
     deleteSchool: async (id: string) => {
         // return await School.findByIdAndDelete(id);
         return await School.findByIdAndUpdate(id, { status: 0 }, { new: true });
-
     }
 }
