@@ -92,41 +92,44 @@ export const SchoolController = {
         }
     },
 
-    getSchools: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    getSchools: async (req: Request, res: Response, next: NextFunction): Promise<void | any> => {
         try {
             const instituteId = req.params.id;
-            if (!instituteId) {
-                return next({ status: 400, message: "Invalid institute ID" });
-            }
             const schools = await SchoolService.getSchools(instituteId);
-            res.json(schools);
+            if (schools instanceof ApiResponse) {
+                return res.status(schools.statusCode).json(schools);
+            }
+            res.status(200).json(ApiResponse.success("Schools Fetched successfully", schools));
         } catch (error: any) {
-            next(error);
+            res.status(400).json(ApiResponse.badRequest(error.message));
         }
     },
 
-    updateSchool: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    updateSchool: async (req: Request, res: Response, next: NextFunction): Promise<void | any> => {
         try {
             const updatedSchool = await SchoolService.updateSchool(req.body);
             if (!updatedSchool) {
-                return next({ status: 404, message: "School not found" });
+                return res.status(404).json({status: false, message: "School not found"});
             }
-            res.json(updatedSchool);
+            if (updatedSchool instanceof ApiResponse) {
+                return res.status(updatedSchool.statusCode).json(updatedSchool);
+            }
+            res.status(201).json(ApiResponse.success("School Updated successfully", updatedSchool));
         } catch (error: any) {
-            next({ status: 400, message: error.errors });
+            res.status(400).json(ApiResponse.badRequest(error.message));
         }
     },
 
-    deleteSchool: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    deleteSchool: async (req: Request, res: Response, next: NextFunction): Promise<void | any> => {
         try {
             const schoolId = req.params.id;
-            if (!schoolId) {
-                return next({ status: 400, message: "School ID is required" });
+            const schools = await SchoolService.deleteSchool(schoolId);
+            if (schools instanceof ApiResponse) {
+                return res.status(schools.statusCode).json(schools);
             }
-            await SchoolService.deleteSchool(schoolId);
-            res.json({ message: "School deleted successfully" });
+            res.status(201).json(ApiResponse.created("School Deleted successfully", schools));
         } catch (error: any) {
-            next(error);
+            res.status(400).json(ApiResponse.badRequest(error.message));
         }
     }
 };
