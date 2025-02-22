@@ -1,0 +1,40 @@
+import mongoose, { Schema } from "mongoose";
+
+const classSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    school_id: {
+        // type: mongoose.Schema.Types.ObjectId,
+        // ref:"school",
+        type: String,
+        required: true,
+    },
+    status: {
+        type: Number,
+        required: true,
+    },
+    created_by: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"user",
+        required: true,
+    },
+    created_at: {
+        type: Number,
+        required: true,
+    },
+    updated_by: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        required: false,
+    },
+    updated_at: {
+        type: Number,
+        required: false,
+    },
+})
+
+const connection = mongoose.connection.useDb("qpeUsers");
+const Class = connection.model("Class", classSchema);
+export default Class;

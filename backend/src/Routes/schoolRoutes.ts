@@ -6,8 +6,8 @@ import { createSchoolSchema, deleteSchoolsSchema, getSchoolsSchema, updateSchool
 const router = express.Router();
 
 router.post("/addSchool", validateRequest(createSchoolSchema), SchoolController.createSchool);
-router.get("/getSchools/:id", validateRequest(getSchoolsSchema), SchoolController.getSchools);
+router.get("/getSchools/:id", SchoolController.getSchools);
 router.put("/updateSchool", validateRequest(updateSchoolSchema), SchoolController.updateSchool);
-router.delete("/deleteSchool/:id", validateRequest(deleteSchoolsSchema), SchoolController.deleteSchool);
+router.delete("/deleteSchool/:id", SchoolController.deleteSchool);
 
 export default router;
