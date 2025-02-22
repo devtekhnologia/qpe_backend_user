@@ -1,5 +1,5 @@
 
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import { IUser } from "../Interfaces/userInterface"; 
 
 const userSchema = new Schema<IUser>(
@@ -13,4 +13,8 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-export const UserModel = model<IUser>("User", userSchema)
+// export const UserModel = model<IUser>("qpeUser", userSchema)
+
+const connection = mongoose.connection.useDb("qpeUsers");
+const UserModel = connection.model("user", userSchema);
+export default UserModel;
