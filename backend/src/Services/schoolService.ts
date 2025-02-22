@@ -15,26 +15,15 @@ export const SchoolService = {
     },
 
     getSchools: async (instituteId: string) => {
-        return await School.find({ institute_id: instituteId, status:1 }); // Filter by institute_id
+        return await School.find({ institute_id: instituteId, status: 1 }); // Filter by institute_id
     },
 
-    // updateSchool: async (schoolData: Partial<ISchool>) => {
-    //     return await School.findByIdAndUpdate(schoolData, { new: true });
-    // },
-    // updateSchool: async (schoolData: Partial<ISchool>) => {
-    //     const { _id, ...updateFields } = schoolData;
-    //     if (!_id) {
-    //         throw new Error("School ID (_id) is required for updating.");
-    //     }
-    //     return await School.findByIdAndUpdate(_id, updateFields, { new: true });
-    // },
-    // SchoolService.ts
-    updateSchool: async (schoolData: Partial<USchool>) => { 
+    updateSchool: async (schoolData: Partial<USchool>) => {
         const _id = (schoolData as { _id?: string })._id; // Explicit assertion
         if (!_id) {
             throw new Error("School ID (_id) is required for updating.");
         }
-    
+
         // Ensure updated_by is set to user_id
         const updateData = {
             ...schoolData,
@@ -42,7 +31,7 @@ export const SchoolService = {
             updated_by: schoolData.user_id, // Set updated_by from user_id
             updated_at: getEpochTime(),
         };
-    
+
         return await School.findByIdAndUpdate(_id, updateData, { new: true });
     },
 
