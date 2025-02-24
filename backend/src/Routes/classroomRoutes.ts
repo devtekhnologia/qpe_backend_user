@@ -6,7 +6,7 @@ import { classroomController } from "../Controllers/classroomController";
 
 const router = express.Router();
 
-router.post("/addclassroom", validateRequest(createClassroomSchema), classroomController.createclassroom);
+router.post("/addclassroom", validateRequest(createClassroomSchema), classroomController.createClassroom);
 router.get("/getClassroom/:id", classroomController.getClassroom);
 router.put("/updateclassroom", validateRequest(updateClassroomSchema), classroomController.updateclassroom);
 router.delete("/deleteClassroom/:id", classroomController.deleteClassroom);

@@ -3,7 +3,7 @@ import { ApiResponse } from "../Utils/response";
 import { classroomService } from "../Services/classroomService";
 
 export const classroomController = {
-    createclassroom: async (req: Request, res: Response, next: NextFunction): Promise<any | void> => {
+    createClassroom: async (req: Request, res: Response, next: NextFunction): Promise<any | void> => {
         try {
             const result = await classroomService.createclassroom(req.body);
             if (result instanceof ApiResponse) {
