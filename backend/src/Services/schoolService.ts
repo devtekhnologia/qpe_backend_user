@@ -13,8 +13,8 @@ export const SchoolService = {
         return await school.save();
     },
 
-    getSchools: async (instituteId: string) => {
-        return await School.find({ institute_id: instituteId, status: 1 }).sort({ _id: -1 }); // Filter by institute_id
+    getSchools: async (id: string) => {
+        return await School.find({ created_by: id, status: 1 }).sort({ _id: -1 }); // Filter by institute_id
     },
 
     updateSchool: async (schoolData: Partial<USchool>) => {

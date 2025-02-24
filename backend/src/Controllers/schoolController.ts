@@ -94,8 +94,8 @@ export const SchoolController = {
 
     getSchools: async (req: Request, res: Response, next: NextFunction): Promise<void | any> => {
         try {
-            const instituteId = req.params.id;
-            const schools = await SchoolService.getSchools(instituteId);
+            const id = req.params.id;
+            const schools = await SchoolService.getSchools(id);
             if (schools instanceof ApiResponse) {
                 return res.status(schools.statusCode).json(schools);
             }
