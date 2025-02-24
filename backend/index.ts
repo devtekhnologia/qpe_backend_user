@@ -8,6 +8,7 @@ dotenv.config();
 import userRoutes from './src/Routes/userRoutes'  
 import schoolRoutes from './src/Routes/schoolRoutes';
 import classRoutes from './src/Routes/classRoutes';
+import sectionRoutes from './src/Routes/sectionRoutes';
 
 const app: Application = express();
 
@@ -41,6 +42,7 @@ app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));
 app.use('/api/v1/users/', userRoutes);
 app.use('/api/v1/schools/', schoolRoutes);
 app.use('/api/v1/class/', classRoutes);
+app.use('/api/v1/section/', sectionRoutes);
 
 // v1 route
 app.get('/api/v1/', (req: Request, res: Response) => {

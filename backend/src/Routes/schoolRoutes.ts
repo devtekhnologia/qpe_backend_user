@@ -1,7 +1,7 @@
 import express from "express";
 import { SchoolController } from "../Controllers/schoolController";
 import { validateRequest } from "../Middlewares/validateMiddleware";
-import { createSchoolSchema, deleteSchoolsSchema, getSchoolsSchema, updateSchoolSchema } from "../Schema/schoolSchema"; 
+import { createSchoolSchema, deleteSchoolsSchema, getSchoolsSchema, updateSchoolSchema } from "../Schema/commonSchema"; 
 
 const router = express.Router();
 
