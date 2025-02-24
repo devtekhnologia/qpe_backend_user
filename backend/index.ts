@@ -11,6 +11,7 @@ import classRoutes from './src/Routes/classRoutes';
 import sectionRoutes from './src/Routes/sectionRoutes';
 import subjectRoutes from './src/Routes/subjectRoutes';
 import examRoutes from './src/Routes/examRoutes';
+import classroomRoutes from './src/Routes/classroomRoutes';
 
 const app: Application = express();
 
@@ -47,6 +48,7 @@ app.use('/api/v1/class/', classRoutes);
 app.use('/api/v1/section/', sectionRoutes);
 app.use('/api/v1/subject/', subjectRoutes);
 app.use('/api/v1/exam/', examRoutes);
+app.use('/api/v1/classroom/', classroomRoutes);
 
 // v1 route
 app.get('/api/v1/', (req: Request, res: Response) => {

@@ -9,48 +9,6 @@ export const createSchoolSchema = z.object({
     name: nameSchema,
 });
 
-export const updateSchoolSchema = z.object({
-    _id: objectIdSchema,
-    user_id: objectIdSchema,
-    name: nameSchema,
-});
-
-export const createClassNameSchema = z.object({
-    name: nameSchema,
-    school_id: objectIdSchema,
-    user_id: objectIdSchema,
-});
-
-export const updateClassNameSchema = z.object({
-    id: objectIdSchema,
-    name: nameSchema,
-    user_id: objectIdSchema,
-});
-
-export const createSectionSchema = z.object({
-    name: nameSchema,
-    school_id: objectIdSchema,
-    user_id: objectIdSchema,
-});
-
-export const updateSectionSchema = z.object({
-    id: objectIdSchema,
-    name: nameSchema,
-    user_id: objectIdSchema,
-});
-
-export const createSubjectSchema = z.object({
-    name: nameSchema,
-    school_id: objectIdSchema,
-    user_id: objectIdSchema,
-});
-
-export const updateSubjectSchema = z.object({
-    id: objectIdSchema,
-    name: nameSchema,
-    user_id: objectIdSchema,
-});
-
 export const createSchema = z.object({
     name: nameSchema,
     school_id: objectIdSchema,
@@ -60,5 +18,22 @@ export const createSchema = z.object({
 export const updateSchema = z.object({
     id: objectIdSchema,
     name: nameSchema,
+    user_id: objectIdSchema,
+});
+
+export const createClassroomSchema = z.object({
+    class_id: objectIdSchema,
+    section_id: objectIdSchema,
+    subject_ids: z.array(objectIdSchema), // Change subject_id to subject_ids (array)
+    school_id: objectIdSchema,
+    user_id: objectIdSchema,
+});
+
+export const updateClassroomSchema = z.object({
+    id: objectIdSchema,
+    class_id: objectIdSchema,
+    section_id: objectIdSchema,
+    subject_ids: z.array(objectIdSchema), // Change subject_id to subject_ids (array)
+    school_id: objectIdSchema,
     user_id: objectIdSchema,
 });
