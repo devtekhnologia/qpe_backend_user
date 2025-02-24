@@ -5,8 +5,8 @@ import { ApiResponse } from "../Utils/response";
 export const UserController = {
   register: async (req: Request, res: Response, next: NextFunction): Promise<any |void> => {
     try {
-      const { name, email, password } = req.body;
-      const result = await UserService.registerUser({ name, email, password });
+      const { name, email, password,schoolName,userId } = req.body;
+      const result = await UserService.registerUser({ name, email, password,schoolName, userId });
 
       // If `result` is an instance of `ApiResponse`, return it directly
       if (result instanceof ApiResponse) {

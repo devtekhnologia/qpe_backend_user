@@ -2,29 +2,59 @@ import { IUser,ILoginUser,token } from "../Interfaces/userInterface";
 import bcrypt from "bcrypt";
 import { ApiResponse } from "../Utils/response";
 import UserModel from "../Models/userModel";
+import instituteModel from "../Models/instituteModel"
 import jwt from "jsonwebtoken"
+import { getEpochTime } from "../Utils/epochTime";
 
 const UserService = {
-  registerUser: async ({ name, email, password }: IUser): Promise< IUser |ApiResponse> => {
-    // Check if all fields are provided
-    if (!name || !email || !password) {
-      return ApiResponse.badRequest("All fields are required: name, email, password");
-    }
-    // Check if the user already exists
+  registerUser: async ({
+    name,
+    email,
+    password,
+    schoolName,
+    userId, 
+  }: IUser & { userId: string }): Promise<IUser | ApiResponse> => {
+    
+    // Check if user already exists
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       return ApiResponse.success("User already exists");
     }
-    // Hash the password before saving
+  
+    // Check if institute exists
+    l = await instituteModel.findOne({ name: schoolName });
+  
+ 
+    if (!institute) {
+      institute = new instituteModel({ name: schoolName });
+      await institute.save();
+    }
+  
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user
-    const newUser = new UserModel({ name, email, password: hashedPassword });
-
-    console.log(newUser);
-
-    await newUser.save();
-    return newUser;
+  
+    // Generate timestamp
+    const createdAt = getEpochTime();
+  
+    // Create the user with the additional fields
+    const newUser = new UserModel({
+      name,
+      email,
+      password: hashedPassword,
+      instituteId: institute._id,
+      status: null, // Default
+      created_by: userId, // Capturing creator's ID
+      created_at: createdAt,
+      updated_by: null,
+      updated_at: null,
+      deleted_by: null,
+      deleted_at: null,
+    });
+  
+    const userSave = await newUser.save();
+    console.log(userSave);
+  
+    return ApiResponse.created("User registered successfully", newUser);
   },
 
   loginUser: async ({ email, password }: ILoginUser): Promise< token | ApiResponse> => {
@@ -44,7 +74,6 @@ const UserService = {
     if (!isMatch) {
       return ApiResponse.unauthorized("Invalid credentials");
     }
-
     // Generate JWT token
     const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET as string, {
       expiresIn: "1d",
@@ -53,9 +82,7 @@ const UserService = {
     return { token };
   }
 
-};
+}
 
-export default UserService;
-
-
+export default UserService
 

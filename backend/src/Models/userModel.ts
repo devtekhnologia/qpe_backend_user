@@ -1,20 +1,29 @@
+import mongoose, { Schema, model, Document } from "mongoose";
+import { IUserModel } from "../Interfaces/userInterface";
 
-import mongoose, { Schema, model } from "mongoose";
-import { IUser } from "../Interfaces/userInterface"; 
-
-const userSchema = new Schema<IUser>(
+// Define the user schema with additional fields
+const userSchema = new Schema<IUserModel & Document>(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
+    schoolId: { type: mongoose.Schema.Types.ObjectId, ref: "institute", required: true },
+    status: { type: Number, default: null },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
+    created_at: { type: Number, required: true },
+    updated_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null },
+    updated_at: { type: Number, default: null },
+    deleted_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null },
+    deleted_at: { type: Number, default: null },
   },
   {
-    timestamps: true,
+    timestamps: false, // Since timestamps are handled manually
+    versionKey: false,
   }
 );
 
-// export const UserModel = model<IUser>("qpeUser", userSchema)
-
+// Use a specific database connection
 const connection = mongoose.connection.useDb("qpeUsers");
-const UserModel = connection.model("user", userSchema);
+const UserModel = connection.model<IUserModel & Document>("user", userSchema);
+
 export default UserModel;
