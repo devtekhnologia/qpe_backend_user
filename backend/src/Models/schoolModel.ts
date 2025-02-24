@@ -6,12 +6,6 @@ const schoolSchema = new Schema({
         type: String,
         required: true,
     },
-    institute_id: {
-        // type: mongoose.Schema.Types.ObjectId,
-        // ref:"institute",
-        type: String,
-        required: true,
-    },
     status: {
         type: Number,
         required: true,

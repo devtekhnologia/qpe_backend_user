@@ -6,7 +6,6 @@ export const SchoolService = {
     createSchool: async (schoolData: Partial<ASchool> & { user_id: string }) => {
         const school = new School({
             name: schoolData.name,
-            institute_id: schoolData.institute_id,
             status: 1,
             created_by: schoolData.user_id, // Mapping user_id to created_by
             created_at: getEpochTime(), // Setting created_at as epoch time
