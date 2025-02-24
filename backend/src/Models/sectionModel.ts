@@ -8,12 +8,12 @@ const sectionSchema = new Schema({
     school_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref:"school",
-        // type: String,
         required: true,
     },
     status: {
         type: Number,
-        required: true,
+        required: false,
+        default: 1
     },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,

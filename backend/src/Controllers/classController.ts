@@ -9,7 +9,7 @@ export const classController = {
             if (classname instanceof ApiResponse) {
                 return res.status(classname.statusCode).json(classname);
             }
-            res.status(201).json(ApiResponse.created("Class Created successfully", classname));
+            res.status(201).json(ApiResponse.created(classname.message, classname.result));
         } catch (error: any) {
             res.status(400).json(ApiResponse.badRequest(error.message));
         }
@@ -17,12 +17,12 @@ export const classController = {
 
     getClassName: async (req: Request, res: Response, next: NextFunction): Promise<void | any> => {
         try {
-            const instituteId = req.params.id;
-            const schools = await classService.getClassName(instituteId);
-            if (schools instanceof ApiResponse) {
-                return res.status(schools.statusCode).json(schools);
+            const school_id = req.params.id;
+            const classname = await classService.getClassName(school_id);
+            if (classname instanceof ApiResponse) {
+                return res.status(classname.statusCode).json(classname);
             }
-            res.status(200).json(ApiResponse.success("Schools Fetched successfully", schools));
+            res.status(200).json(ApiResponse.success(classname.message, classname.result));
         } catch (error: any) {
             res.status(400).json(ApiResponse.badRequest(error.message));
         }
@@ -30,14 +30,14 @@ export const classController = {
 
     updateClassName: async (req: Request, res: Response, next: NextFunction): Promise<void | any> => {
         try {
-            const updatedSchool = await classService.updateClassName(req.body);
-            if (!updatedSchool) {
-                return res.status(404).json({status: false, message: "School not found"});
+            const updatedclassname = await classService.updateClassName(req.body);
+            if (!updatedclassname) {
+                return res.status(404).json({status: false, message: "Class not found"});
             }
-            if (updatedSchool instanceof ApiResponse) {
-                return res.status(updatedSchool.statusCode).json(updatedSchool);
+            if (updatedclassname instanceof ApiResponse) {
+                return res.status(updatedclassname.statusCode).json(updatedclassname);
             }
-            res.status(201).json(ApiResponse.success("School Updated successfully", updatedSchool));
+            res.status(201).json(ApiResponse.success(updatedclassname.message, updatedclassname.result));
         } catch (error: any) {
             res.status(400).json(ApiResponse.badRequest(error.message));
         }
@@ -45,12 +45,12 @@ export const classController = {
 
     deleteClassName: async (req: Request, res: Response, next: NextFunction): Promise<void | any> => {
         try {
-            const schoolId = req.params.id;
-            const schools = await classService.deleteClassName(schoolId);
-            if (schools instanceof ApiResponse) {
-                return res.status(schools.statusCode).json(schools);
+            const Id = req.params.id;
+            const classname = await classService.deleteClassName(Id);
+            if (classname instanceof ApiResponse) {
+                return res.status(classname.statusCode).json(classname);
             }
-            res.status(201).json(ApiResponse.created("School Deleted successfully", schools));
+            res.status(201).json(ApiResponse.created(classname.message, classname.result));
         } catch (error: any) {
             res.status(400).json(ApiResponse.badRequest(error.message));
         }

@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const classSchema = new Schema({
+const subjectSchema = new Schema({
     name: {
         type: String,
         required: true,
@@ -36,5 +36,5 @@ const classSchema = new Schema({
 })
 
 const connection = mongoose.connection.useDb("qpeUsers");
-const Class = connection.model("Class", classSchema);
-export default Class;
+const Subject = connection.model("Subject", subjectSchema);
+export default Subject;
