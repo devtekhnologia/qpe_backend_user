@@ -118,28 +118,52 @@ const UserService = {
     }
   },
 
-  loginUser: async ({ email, password }: ILoginUser): Promise< tokenInterface | ApiResponse> => {
-    // Check if all fields are provided
+  loginUser: async ({ email, password }: ILoginUser): Promise<tokenInterface | ApiResponse> => {
     if (!email || !password) {
-      return ApiResponse.badRequest("Email and password are required");
+        return ApiResponse.badRequest("Email and password are required");
     }
-
-    // Check if user exists
-    const user = await UserModel.findOne({ email });
-    if (!user) {
-      return ApiResponse.unauthorized("Invalid credentials");
+  
+    // Fetch user along with role details using aggregation
+    const user = await UserModel.aggregate([
+        { $match: { email } },
+        { 
+            $lookup: { 
+                from: "roles",  // Collection name (should match exactly in MongoDB)
+                localField: "roleId", 
+                foreignField: "_id", 
+                as: "roleInfo"
+            }
+        },
+        { $unwind: "$roleInfo" }, // Unwind to extract role data
+        { 
+            $project: { 
+                email: 1, 
+                password: 1, 
+                roleId: 1, 
+                roleName: "$roleInfo.roleName" 
+            } 
+        }
+    ]).exec();
+  
+    if (!user.length) {
+        return ApiResponse.unauthorized("Invalid credentials");
     }
-
+  
+    const foundUser = user[0];
+  
     // Validate password
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, foundUser.password);
     if (!isMatch) {
-      return ApiResponse.unauthorized("Invalid credentials");
+        return ApiResponse.unauthorized("Invalid credentials");
     }
-    // Generate JWT token
-    const token = Jwt.sign({ userId: user._id,roleId:user.roleId }, process.env.JWT_SECRET as string, {
-      expiresIn: "1d",
-    });
-
+  
+    // Generate JWT token with role name
+    const token = Jwt.sign(
+        { userId: foundUser._id, roleId: foundUser.roleId, roleName: foundUser.roleName }, 
+        process.env.JWT_SECRET as string, 
+        { expiresIn: "1d" }
+    );
+  
     return { token };
   }
 
