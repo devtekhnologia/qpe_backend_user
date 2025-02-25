@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
-import userRoutes from './src/Routes/v1/userRoutes'  
+import userRoutes from './src/Routes/v1/userRoutes'
 import schoolRoutes from './src/Routes/v1/schoolRoutes';
 import classRoutes from './src/Routes/v1/classRoutes';
 import sectionRoutes from './src/Routes/v1/sectionRoutes';
@@ -13,6 +13,7 @@ import subjectRoutes from './src/Routes/v1/subjectRoutes';
 import examRoutes from './src/Routes/v1/examRoutes';
 import classroomRoutes from './src/Routes/v1/classroomRoutes';
 import classExamRoutes from './src/Routes/v1/classExamRoutes';
+import fs from "fs";
 
 const app: Application = express();
 
@@ -51,6 +52,18 @@ app.use('/api/v1/subject/', subjectRoutes);
 app.use('/api/v1/exam/', examRoutes);
 app.use('/api/v1/classroom/', classroomRoutes);
 app.use('/api/v1/classexam/', classExamRoutes);
+
+// // **Dynamically Load Routes from "routes" Folder**
+// const routesDir = path.join(__dirname, 'src', 'Routes', 'v1');
+// fs.readdirSync(routesDir).forEach((file) => {
+//   if (file.endsWith('.ts') || file.endsWith('.js')) {
+//     const routeName = file.replace(/Routes\.(ts|js)$/, '').toLowerCase(); // Extract route name
+//     const routeModule = require(path.join(routesDir, file)).default; // Import the module
+
+//     app.use(`/api/v1/${routeName}`, routeModule);
+//     console.log(`✔ Route registered: /api/v1/${routeName}`);
+//   }
+// });
 
 // v1 route
 app.get('/api/v1/', (req: Request, res: Response) => {
