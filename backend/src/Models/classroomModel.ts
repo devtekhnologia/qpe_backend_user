@@ -1,13 +1,26 @@
 import mongoose, { Schema } from "mongoose";
 
-const classSchema = new Schema({
-    name: {
-        type: String,
+const classroomSchema = new Schema({
+    class_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "class",
         required: true,
     },
+    section_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "section",
+        required: true,
+    },
+    subject_ids: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "subject",
+            required: true,
+        }
+    ],
     school_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"school",
+        ref: "school",
         required: true,
     },
     status: {
@@ -17,7 +30,7 @@ const classSchema = new Schema({
     },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"user",
+        ref: "user",
         required: true,
     },
     created_at: {
@@ -36,5 +49,5 @@ const classSchema = new Schema({
 })
 
 const connection = mongoose.connection.useDb("qpeUsers");
-const Class = connection.model("Class", classSchema);
-export default Class;
+const Classroom = connection.model("Classroom", classroomSchema);
+export default Classroom;

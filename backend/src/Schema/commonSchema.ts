@@ -1,28 +1,39 @@
 import { z } from "zod";
 
 const objectIdPattern = /^[a-f\d]{24}$/i;
+const objectIdSchema = z.string().regex(objectIdPattern, "Invalid ID format. Must be a valid ObjectId");
+const nameSchema = z.string().min(1, "Name must be at least 1 characters long");
 
 export const createSchoolSchema = z.object({
-    user_id: z.string().regex(objectIdPattern, "Invalid user_id format. Must be a valid ObjectId"),
-    name: z.string().min(3, "School name must be at least 3 characters long"),
+    user_id: objectIdSchema,
+    name: nameSchema,
 });
 
-export const getSchoolsSchema = z.object({
-    id: z.string().regex(objectIdPattern, "Invalid institute ID format. Must be a valid ObjectId"),
+export const createSchema = z.object({
+    name: nameSchema,
+    school_id: objectIdSchema,
+    user_id: objectIdSchema,
 });
 
-export const updateSchoolSchema = z.object({
-    _id: z.string().regex(objectIdPattern, "Invalid user_id format. Must be a valid ObjectId"),
-    name: z.string().min(3, "School name must be at least 3 characters long"),
-    user_id: z.string().regex(objectIdPattern, "Invalid user_id format. Must be a valid ObjectId"),
+export const updateSchema = z.object({
+    id: objectIdSchema,
+    name: nameSchema,
+    user_id: objectIdSchema,
 });
 
-export const deleteSchoolsSchema = z.object({
-    id: z.string().regex(objectIdPattern, "Invalid institute ID format. Must be a valid ObjectId"),
+export const createClassroomSchema = z.object({
+    class_id: objectIdSchema,
+    section_id: objectIdSchema,
+    subject_ids: z.array(objectIdSchema), // Change subject_id to subject_ids (array)
+    school_id: objectIdSchema,
+    user_id: objectIdSchema,
 });
 
-export const createClassNameSchema = z.object({
-    name: z.string().min(3, "Class name must be at least 1 character long"),
-    school_id: z.string().regex(objectIdPattern, "Invalid school_id format. Must be a valid ObjectId"),
-    user_id: z.string().regex(objectIdPattern, "Invalid user_id format. Must be a valid ObjectId"),
+export const updateClassroomSchema = z.object({
+    id: objectIdSchema,
+    class_id: objectIdSchema,
+    section_id: objectIdSchema,
+    subject_ids: z.array(objectIdSchema), // Change subject_id to subject_ids (array)
+    school_id: objectIdSchema,
+    user_id: objectIdSchema,
 });

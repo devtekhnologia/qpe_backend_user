@@ -1,9 +1,9 @@
-import { ASchool, USchool } from "../Interfaces/schoolInterface";
+import { Data } from "../Interfaces/commonInterface";
 import School from "../Models/schoolModel";
 import { getEpochTime } from "../Utils/epochTime";
 
 export const SchoolService = {
-    createSchool: async (schoolData: Partial<ASchool> & { user_id: string }) => {
+    createSchool: async (schoolData: Partial<Data>) => {
         const school = new School({
             name: schoolData.name,
             status: 1,
@@ -17,8 +17,8 @@ export const SchoolService = {
         return await School.find({ created_by: id, status: 1 }).sort({ _id: -1 }); // Filter by institute_id
     },
 
-    updateSchool: async (schoolData: Partial<USchool>) => {
-        const _id = (schoolData as { _id?: string })._id; // Explicit assertion
+    updateSchool: async (schoolData: Partial<Data>) => {
+        const _id = (schoolData as { id?: string }).id; // Explicit assertion
         if (!_id) {
             throw new Error("School ID (_id) is required for updating.");
         }
