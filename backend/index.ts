@@ -5,14 +5,14 @@ import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
-import userRoutes from './src/Routes/userRoutes'  
-import schoolRoutes from './src/Routes/schoolRoutes';
-import classRoutes from './src/Routes/classRoutes';
-import sectionRoutes from './src/Routes/sectionRoutes';
-import subjectRoutes from './src/Routes/subjectRoutes';
-import examRoutes from './src/Routes/examRoutes';
-import classroomRoutes from './src/Routes/classroomRoutes';
-import classExamRoutes from './src/Routes/classExamRoutes';
+import userRoutes from './src/Routes/v1/userRoutes'  
+import schoolRoutes from './src/Routes/v1/schoolRoutes';
+import classRoutes from './src/Routes/v1/classRoutes';
+import sectionRoutes from './src/Routes/v1/sectionRoutes';
+import subjectRoutes from './src/Routes/v1/subjectRoutes';
+import examRoutes from './src/Routes/v1/examRoutes';
+import classroomRoutes from './src/Routes/v1/classroomRoutes';
+import classExamRoutes from './src/Routes/v1/classExamRoutes';
 
 const app: Application = express();
 
