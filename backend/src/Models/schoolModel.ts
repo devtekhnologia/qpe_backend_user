@@ -7,8 +7,7 @@ const schoolSchema = new Schema({
         required: true,
     },
     status: {
-        type: Number,
-        required: true,
+        type: Number, default: 1,
     },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
@@ -32,4 +31,4 @@ const schoolSchema = new Schema({
 
 const connection = mongoose.connection.useDb("qpeUsers");
 const School = connection.model("School", schoolSchema);
-export default School;
+export default School;  

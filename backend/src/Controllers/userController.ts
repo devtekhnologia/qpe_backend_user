@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../Services/userService";
 import { ApiResponse } from "../Utils/response";
+import mongoose from "mongoose";
 
 export const UserController = {
   register: async (req: Request, res: Response, next: NextFunction): Promise<any |void> => {
     try {
-      const { name, email, password } = req.body;
-      const result = await UserService.registerUser({ name, email, password });
+      const { name, email, password,schoolName,roleId } = req.body;
+      const userId = new mongoose.Types.ObjectId("5f92cbf10cf217478ba93561");
+      const result = await UserService.registerUser({ name,email,password,schoolName,roleId,userId  });
 
       // If `result` is an instance of `ApiResponse`, return it directly
       if (result instanceof ApiResponse) {
