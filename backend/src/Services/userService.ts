@@ -1,70 +1,124 @@
-import { IUser,ILoginUser,token } from "../Interfaces/userInterface";
+import { IRegisterAdmin, IRegisterUser,ILoginUser,tokenInterface } from "../Interfaces/userInterface";
 import bcrypt from "bcrypt";
 import { ApiResponse } from "../Utils/response";
 import UserModel from "../Models/userModel";
-import schoolModel from "../Models/schoolModel"
-import jwt from "jsonwebtoken"
+import schoolModel from "../Models/schoolModel";
 import { getEpochTime } from "../Utils/epochTime";
+import mongoose from "mongoose";
+import  Jwt  from "jsonwebtoken";
 
 const UserService = {
-  registerUser: async ({
+  // Register Admin (Creates a School if it doesn't exist)
+  registerAdmin: async ({
     name,
     email,
     password,
     schoolName,
     roleId,
-    userId
-  }: IUser ): Promise<IUser | ApiResponse> => {
+    userId , // Default to null if not provided
+  }: IRegisterAdmin): Promise<ApiResponse> => {
+    try {
+      // Check if user already exists
+      const existingUser = await UserModel.findOne({ email }).lean();
+      if (existingUser) {
+        return ApiResponse.success("User already exists");
+      }
 
-  
-    // Check if user already exists
-    const existingUser = await UserModel.findOne({ email }).lean();
-    if (existingUser) {
-      return ApiResponse.success("User already exists");
+      // Check if school exists
+      let school = await schoolModel.findOne({ name: schoolName.trim() }).lean();
+
+      if (!school) {
+        school = await new schoolModel({
+          name: schoolName.trim(),
+          created_at: getEpochTime(),
+          created_by: userId || null, // Handle null case properly
+        }).save();
+      }
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Generate timestamp
+      const createdAt = getEpochTime();
+
+      // Create the Admin user
+      const newUser = new UserModel({
+        name: name.trim(),
+        email: email.trim(),
+        password: hashedPassword,
+        schoolId: school._id, // Assign schoolId from created/found school
+        roleId,
+        userId, // Can be null
+        created_at: createdAt,
+        updated_by: null,
+        updated_at: null,
+        deleted_by: null,
+        deleted_at: null,
+      });
+
+      // Save user
+      const userSave = await newUser.save();
+
+      return ApiResponse.created("Admin registered successfully", userSave);
+    } catch (error) {
+      console.error("Error in registerAdmin:", error);
+      return ApiResponse.internalServerError("Failed to register admin");
     }
-  
-    // Check if school exists
-    // Check if school exists
-let school = await schoolModel.findOne({ name: schoolName.trim() }).lean();
-
-if (!school) {
-  school = await new schoolModel({
-    name: schoolName.trim(),
-    created_at: getEpochTime(), 
-    created_by:userId
-  }).save();
-}
-
-  
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-  
-    // Generate timestamp
-    const createdAt = getEpochTime();
-  
-    // Create the user with additional fields
-    const newUser = new UserModel({
-      name: name.trim(),
-      email: email.trim(),
-      password: hashedPassword,
-      schoolId: school._id,
-      roleId:roleId,
-      userId:userId,
-      created_at: createdAt,
-      updated_by: null,
-      updated_at: null,
-      deleted_by: null,
-      deleted_at: null,
-    });
-  
-    // Save user
-    const userSave = await newUser.save();
-    console.log(userSave);
-  
-    return ApiResponse.created("User registered successfully", userSave);
   },
-  
-  loginUser: async ({ email, password }: ILoginUser): Promise< token | ApiResponse> => {
+
+  // Register User (Uses an existing School ID)
+  registerUser: async ({
+    name,
+    email,
+    password,
+    schoolId,
+    roleId,
+    userId  // Default to null if not provided
+  }: IRegisterUser): Promise<ApiResponse> => {
+    try {
+      // Check if user already exists
+      const existingUser = await UserModel.findOne({ email }).lean();
+      if (existingUser) {
+        return ApiResponse.success("User already exists");
+      }
+
+      // Ensure `schoolId` is a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(schoolId)) {
+        return ApiResponse.badRequest("Invalid schoolId format");
+      }
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Generate timestamp
+      const createdAt = getEpochTime();
+
+      // Create the user
+      const newUser = new UserModel({
+        name: name.trim(),
+        email: email.trim(),
+        password: hashedPassword,
+        schoolId: new mongoose.Types.ObjectId(schoolId),
+        roleId,
+        userId, // Can be null
+        created_at: createdAt,
+        updated_by: null,
+        updated_at: null,
+        deleted_by: null,
+        deleted_at: null,
+      });
+
+      // Save user
+      const userSave = await newUser.save();
+
+      return ApiResponse.created("User registered successfully", userSave);
+    } catch (error) {
+      console.error("Error in registerUser:", error);
+      return ApiResponse.internalServerError("Failed to register user");
+    }
+  },
+
+  loginUser: async ({ email, password }: ILoginUser): Promise< tokenInterface | ApiResponse> => {
     // Check if all fields are provided
     if (!email || !password) {
       return ApiResponse.badRequest("Email and password are required");
@@ -82,7 +136,7 @@ if (!school) {
       return ApiResponse.unauthorized("Invalid credentials");
     }
     // Generate JWT token
-    const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET as string, {
+    const token = Jwt.sign({ userId: user._id,roleId:user.roleId }, process.env.JWT_SECRET as string, {
       expiresIn: "1d",
     });
 
