@@ -2,9 +2,6 @@ import { Types } from "mongoose";
 import { getEpochTime } from "../Utils/epochTime";
 import Classroom from "../Models/classroomModel";
 import { Data } from "../Interfaces/classroomInterface";
-import Class from "../Models/classModel";
-import Section from "../Models/sectionModel";
-import Subject from "../Models/subjectModel";
 
 export const classroomService = {
 
@@ -64,49 +61,118 @@ export const classroomService = {
 
     getClassroom: async (school_id: string) => {
         try {
-            // Fetch all classrooms associated with the given school_id
-            const classrooms = await Classroom.find({ school_id: school_id, status: 1 });
-
+            const classrooms = await Classroom.aggregate([
+                { 
+                    $match: { 
+                        school_id: new Types.ObjectId(school_id), 
+                        status: 1 
+                    } 
+                },
+    
+                // Lookup Class details with status = 1
+                {
+                    $lookup: {
+                        from: "classes",
+                        let: { classId: "$class_id" },
+                        pipeline: [
+                            { 
+                                $match: { 
+                                    $expr: { $and: [
+                                        { $eq: ["$_id", "$$classId"] },
+                                        { $eq: ["$status", 1] } 
+                                    ]}
+                                } 
+                            }
+                        ],
+                        as: "classInfo"
+                    }
+                },
+                { 
+                    $unwind: { 
+                        path: "$classInfo", 
+                        preserveNullAndEmptyArrays: true 
+                    } 
+                },
+    
+                // Lookup Section details with status = 1
+                {
+                    $lookup: {
+                        from: "sections",
+                        let: { sectionId: "$section_id" },
+                        pipeline: [
+                            { 
+                                $match: { 
+                                    $expr: { $and: [
+                                        { $eq: ["$_id", "$$sectionId"] },
+                                        { $eq: ["$status", 1] } 
+                                    ]}
+                                } 
+                            }
+                        ],
+                        as: "sectionInfo"
+                    }
+                },
+                { 
+                    $unwind: { 
+                        path: "$sectionInfo", 
+                        preserveNullAndEmptyArrays: true 
+                    } 
+                },
+    
+                // Lookup Subject details with status = 1
+                {
+                    $lookup: {
+                        from: "subjects",
+                        let: { subjectIds: "$subject_ids" },
+                        pipeline: [
+                            { 
+                                $match: { 
+                                    $expr: { $and: [
+                                        { $in: ["$_id", "$$subjectIds"] },
+                                        { $eq: ["$status", 1] }
+                                    ]}
+                                } 
+                            }
+                        ],
+                        as: "subjectInfo"
+                    }
+                },
+    
+                // Format the output
+                {
+                    $project: {
+                        _id: 0,
+                        school_id: 1,
+                        class_id: 1,
+                        class_name: { $ifNull: ["$classInfo.name", "Unknown Class"] },
+                        section_id: 1,
+                        section_name: { $ifNull: ["$sectionInfo.name", "Unknown Section"] },
+                        subject_ids: 1,
+                        subject_names: {
+                            $cond: {
+                                if: { $isArray: "$subjectInfo" },
+                                then: { $map: { input: "$subjectInfo", as: "s", in: "$$s.name" } },
+                                else: ["Unknown Subject"]
+                            }
+                        }
+                    }
+                }
+            ]);
+    
             if (!classrooms || classrooms.length === 0) {
                 return { message: "No classrooms found for this school." };
             }
-
-            // Extract unique class_ids, section_ids, and subject_ids
-            const classIds = [...new Set(classrooms.map(c => c.class_id))];
-            const sectionIds = [...new Set(classrooms.map(c => c.section_id))];
-            const subjectIds = [...new Set(classrooms.flatMap(c => c.subject_ids))];
-
-            // Fetch Class Names
-            const classes = await Class.find({ _id: { $in: classIds }, status: 1 }, { _id: 1, name: 1 });
-            const classMap = new Map(classes.map(c => [c._id.toString(), c.name]));
-
-            // Fetch Section Names
-            const sections = await Section.find({ _id: { $in: sectionIds }, status: 1 }, { _id: 1, name: 1 });
-            const sectionMap = new Map(sections.map(s => [s._id.toString(), s.name]));
-
-            // Fetch Subject Names
-            const subjects = await Subject.find({ _id: { $in: subjectIds }, status: 1 }, { _id: 1, name: 1 });
-            const subjectMap = new Map(subjects.map(s => [s._id.toString(), s.name]));
-
-            // Format Classroom Data
-            const formattedClassrooms = classrooms.map(classroom => ({
-                school_id: classroom.school_id,
-                class_id: classroom.class_id,
-                class_name: classMap.get(classroom.class_id.toString()) || "Unknown Class",
-                section_id: classroom.section_id,
-                section_name: sectionMap.get(classroom.section_id.toString()) || "Unknown Section",
-                subject_ids: classroom.subject_ids,
-                subject_names: classroom.subject_ids.map(id => subjectMap.get(id.toString()) || "Unknown Subject"),
-            }));
-
+    
             return {
                 message: "Classrooms fetched successfully",
-                result: formattedClassrooms,
+                result: classrooms
             };
         } catch (error) {
             return { message: "Error fetching classrooms", error: error };
         }
     },
+    
+    
 
     updateclassroom: async (Data: Partial<Data> & { id: string }) => {
         if (!Data.subject_ids || Data.subject_ids.length === 0) {
