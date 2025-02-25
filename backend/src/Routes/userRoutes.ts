@@ -8,11 +8,11 @@ import { UserController } from "../Controllers/userController";
 import { validateRequest } from "../Middlewares/validateMiddleware";
 
 
-import { registerUserSchema } from "../Schema/userSchema"; 
+import { registerUserSchema,registerAdminSchema} from "../Schema/userSchema"; 
 
 const router = Router();
 
-router.post("/register", validateRequest(registerUserSchema), UserController.register);
+router.post("/registerAdmin", validateRequest(registerAdminSchema), UserController.register);
 router.post("/login", UserController.login);
 
 export default router;

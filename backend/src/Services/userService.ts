@@ -2,7 +2,7 @@ import { IUser,ILoginUser,token } from "../Interfaces/userInterface";
 import bcrypt from "bcrypt";
 import { ApiResponse } from "../Utils/response";
 import UserModel from "../Models/userModel";
-import instituteModel from "../Models/instituteModel"
+import schoolModel from "../Models/schoolModel"
 import jwt from "jsonwebtoken"
 import { getEpochTime } from "../Utils/epochTime";
 
@@ -12,23 +12,29 @@ const UserService = {
     email,
     password,
     schoolName,
-    userId, 
-  }: IUser & { userId: string }): Promise<IUser | ApiResponse> => {
-    
+    roleId,
+    userId
+  }: IUser ): Promise<IUser | ApiResponse> => {
+
+  
     // Check if user already exists
-    const existingUser = await UserModel.findOne({ email });
+    const existingUser = await UserModel.findOne({ email }).lean();
     if (existingUser) {
       return ApiResponse.success("User already exists");
     }
   
-    // Check if institute exists
-    l = await instituteModel.findOne({ name: schoolName });
-  
- 
-    if (!institute) {
-      institute = new instituteModel({ name: schoolName });
-      await institute.save();
-    }
+    // Check if school exists
+    // Check if school exists
+let school = await schoolModel.findOne({ name: schoolName.trim() }).lean();
+
+if (!school) {
+  school = await new schoolModel({
+    name: schoolName.trim(),
+    created_at: getEpochTime(), 
+    created_by:userId
+  }).save();
+}
+
   
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -36,14 +42,14 @@ const UserService = {
     // Generate timestamp
     const createdAt = getEpochTime();
   
-    // Create the user with the additional fields
+    // Create the user with additional fields
     const newUser = new UserModel({
-      name,
-      email,
+      name: name.trim(),
+      email: email.trim(),
       password: hashedPassword,
-      instituteId: institute._id,
-      status: null, // Default
-      created_by: userId, // Capturing creator's ID
+      schoolId: school._id,
+      roleId:roleId,
+      userId:userId,
       created_at: createdAt,
       updated_by: null,
       updated_at: null,
@@ -51,12 +57,13 @@ const UserService = {
       deleted_at: null,
     });
   
+    // Save user
     const userSave = await newUser.save();
     console.log(userSave);
   
-    return ApiResponse.created("User registered successfully", newUser);
+    return ApiResponse.created("User registered successfully", userSave);
   },
-
+  
   loginUser: async ({ email, password }: ILoginUser): Promise< token | ApiResponse> => {
     // Check if all fields are provided
     if (!email || !password) {

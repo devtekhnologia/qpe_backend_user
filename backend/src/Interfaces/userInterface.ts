@@ -5,8 +5,13 @@ export interface IUser {
   email: string;
   password: string;
   schoolName: string;
-  userId: mongoose.Types.ObjectId;// This is used in the service
+  roleId: mongoose.Types.ObjectId;// This is used in the service
+  userId:mongoose.Types.ObjectId
 }
+
+
+
+
 
 export interface IUserModel extends IUser {
   schoolId: mongoose.Types.ObjectId;
