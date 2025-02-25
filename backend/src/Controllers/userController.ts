@@ -16,7 +16,7 @@ export const UserController = {
       }
 
       // Otherwise, return success response
-      res.status(201).json(ApiResponse.created("User registered successfully", result));
+      res.status(201).json(ApiResponse.created("Admin registered successfully", result));
     } catch (error: any) {
       res.status(400).json(ApiResponse.badRequest(error.message));
     }
