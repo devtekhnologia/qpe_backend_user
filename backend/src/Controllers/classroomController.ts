@@ -48,6 +48,18 @@ export const classroomController = {
         } catch (error: any) {  
             res.status(400).json(ApiResponse.badRequest(error.message));
         }
-    }
+    },
+    getClassroomSubjects: async (req: Request, res: Response, next: NextFunction): Promise<void | any> => {
+        try {
+            const classroom_id = req.params.id;
+            const classname = await classroomService.getClassroomSubjects(classroom_id);
+            if (classname instanceof ApiResponse) {
+                return res.status(classname.statusCode).json(classname);
+            }
+            res.status(200).json(ApiResponse.success(classname.message, classname.result));
+        } catch (error: any) {
+            res.status(400).json(ApiResponse.badRequest(error.message));
+        }
+    },
 
 };

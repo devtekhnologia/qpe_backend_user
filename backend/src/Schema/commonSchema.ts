@@ -37,3 +37,20 @@ export const updateClassroomSchema = z.object({
     school_id: objectIdSchema,
     user_id: objectIdSchema,
 });
+
+export const createClassExamSchema = z.object({
+    classroom_id: objectIdSchema,
+    exam_id: objectIdSchema,
+    subject_ids: z.array(objectIdSchema), // Change subject_id to subject_ids (array)
+    school_id: objectIdSchema,
+    user_id: objectIdSchema,
+});
+
+export const updateClassExamSchema = z.object({
+    id: objectIdSchema,
+    classroom_id: objectIdSchema,
+    exam_id: objectIdSchema,
+    subject_ids: z.array(objectIdSchema), // Change subject_id to subject_ids (array)
+    school_id: objectIdSchema,
+    user_id: objectIdSchema,
+});

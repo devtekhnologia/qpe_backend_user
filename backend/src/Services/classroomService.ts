@@ -226,6 +226,65 @@ export const classroomService = {
         } else {
             return { message: "No Classname found", result: [] };
         }
-    }
+    },
+
+    getClassroomSubjects: async (classroom_id: string) => {
+        try {
+            const classroomSubjects = await Classroom.aggregate([
+                { 
+                    $match: { 
+                        _id: new Types.ObjectId(classroom_id), 
+                        status: 1 
+                    } 
+                },
+    
+                // Lookup Subject details with status = 1
+                {
+                    $lookup: {
+                        from: "subjects",
+                        let: { subjectIds: "$subject_ids" },
+                        pipeline: [
+                            { 
+                                $match: { 
+                                    $expr: { $and: [
+                                        { $in: ["$_id", "$$subjectIds"] },
+                                        { $eq: ["$status", 1] }
+                                    ]}
+                                } 
+                            }
+                        ],
+                        as: "subjectInfo"
+                    }
+                },
+    
+                // Format the output
+                {
+                    $project: {
+                        _id: 0,
+                        school_id: 1,
+                        subject_ids: 1,
+                        subject_names: {
+                            $cond: {
+                                if: { $isArray: "$subjectInfo" },
+                                then: { $map: { input: "$subjectInfo", as: "s", in: "$$s.name" } },
+                                else: ["Unknown Subject"]
+                            }
+                        }
+                    }
+                }
+            ]);
+    
+            if (!classroomSubjects || classroomSubjects.length === 0) {
+                return { message: "No classrooms found for this school." };
+            }
+    
+            return {
+                message: "Classroom Subjects fetched successfully",
+                result: classroomSubjects
+            };
+        } catch (error) {
+            return { message: "Error fetching classrooms", error: error };
+        }
+    },
 
 }
