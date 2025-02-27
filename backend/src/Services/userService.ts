@@ -8,15 +8,15 @@ import mongoose from "mongoose";
 import  Jwt  from "jsonwebtoken";
 
 const UserService = {
-  // Register Admin (Creates a School if it doesn't exist)
+  
   registerAdmin: async ({
     name,
     email,
     password,
     schoolName,
     roleId,
-    userId , // Default to null if not provided
-  }: IRegisterAdmin): Promise<ApiResponse> => {
+    userId , 
+  }: IRegisterAdmin): Promise<ApiResponse | any> => {
     try {
       // Check if user already exists
       const existingUser = await UserModel.findOne({ email }).lean();
@@ -55,18 +55,21 @@ const UserService = {
         deleted_by: null,
         deleted_at: null,
       });
+   
+      return {
+        email: newUser.email,
+        password: newUser.password,
+        userId: newUser.userId,
+        roleId: newUser.roleId,
+        schoolId: newUser.schoolId,
+      };
 
-      // Save user
-      const userSave = await newUser.save();
-
-      return ApiResponse.created("Admin registered successfully", userSave);
     } catch (error) {
       console.error("Error in registerAdmin:", error);
-      return ApiResponse.internalServerError("Failed to register admin");
+      return ApiResponse.internalServerError('Error in registerAdmin');
     }
   },
 
-  // Register User (Uses an existing School ID)
   registerUser: async ({
     name,
     email,
@@ -74,7 +77,7 @@ const UserService = {
     schoolId,
     roleId,
     userId  // Default to null if not provided
-  }: IRegisterUser): Promise<ApiResponse> => {
+  }: IRegisterUser): Promise<ApiResponse | any > => {
     try {
       // Check if user already exists
       const existingUser = await UserModel.findOne({ email }).lean();
@@ -108,10 +111,14 @@ const UserService = {
         deleted_at: null,
       });
 
-      // Save user
-      const userSave = await newUser.save();
+      return {
+        email: newUser.email,
+        password: newUser.password,
+        userId: newUser.userId,
+        roleId: newUser.roleId,
+        schoolId: newUser.schoolId,
+      };
 
-      return ApiResponse.created("User registered successfully", userSave);
     } catch (error) {
       console.error("Error in registerUser:", error);
       return ApiResponse.internalServerError("Failed to register user");
@@ -128,13 +135,13 @@ const UserService = {
         { $match: { email } },
         { 
             $lookup: { 
-                from: "roles",  // Collection name (should match exactly in MongoDB)
+                from: "roles",  
                 localField: "roleId", 
                 foreignField: "_id", 
                 as: "roleInfo"
             }
         },
-        { $unwind: "$roleInfo" }, // Unwind to extract role data
+        { $unwind: "$roleInfo" }, 
         { 
             $project: { 
                 email: 1, 
