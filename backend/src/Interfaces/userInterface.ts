@@ -6,20 +6,20 @@ export interface IRegisterBase {
   name: string;
   email: string;
   password: string;
-  roleId: mongoose.Types.ObjectId; // Common for both
-  userId?: mongoose.Types.ObjectId; // Optional because admin might not have userId
+  role_id: mongoose.Types.ObjectId; // Common for both
+  user_id?: mongoose.Types.ObjectId; // Optional because admin might not have user_id
 }
 
 export interface IRegisterAdmin extends IRegisterBase {
-  schoolName: string; // Admin provides a schoolName instead of schoolId
+  school_name: string; // Admin provides a schoolName instead of schoolId
 }
 
 export interface IRegisterUser extends IRegisterBase {
-  schoolId: mongoose.Types.ObjectId; // Normal users have schoolId
+  school_id: mongoose.Types.ObjectId; // Normal users have schoolId
 }
 
 export interface IUserModel extends IRegisterBase {
-  schoolId?: mongoose.Types.ObjectId; // Admin may not have schoolId at creation
+  school_id?: mongoose.Types.ObjectId; // Admin may not have schoolId at creation
   status?: number;
   created_by?: mongoose.Types.ObjectId;
   created_at: number;
