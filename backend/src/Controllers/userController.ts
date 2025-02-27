@@ -6,9 +6,9 @@ import mongoose from "mongoose";
 export const UserController = {
   registerAdmin: async (req: Request, res: Response, next: NextFunction): Promise<any |void> => {
     try {
-      const { name, email, password,schoolName,roleId } = req.body;
-      const userId = new mongoose.Types.ObjectId("5f92cbf10cf217478ba93561");
-      const result = await UserService.registerAdmin({ name,email,password,schoolName,roleId,userId  });
+      const { name, email, password,school_name,role_id } = req.body;
+      const user_id = new mongoose.Types.ObjectId("5f92cbf10cf217478ba93561");
+      const result = await UserService.registerAdmin({ name,email,password,school_name,role_id,user_id  });
 
       // If `result` is an instance of `ApiResponse`, return it directly
       if (result instanceof ApiResponse) {
@@ -25,9 +25,9 @@ export const UserController = {
 
   registerUser: async (req: Request, res: Response, next: NextFunction): Promise<any |void> => {
     try {
-      const { name, email, password,schoolId,roleId,userId } = req.body;
+      const { name, email, password,school_id,role_id,user_id } = req.body;
      
-      const result = await UserService.registerUser({ name,email,password,schoolId,roleId,userId  });
+      const result = await UserService.registerUser({ name,email,password,school_id,role_id,user_id  });
 
       // If `result` is an instance of `ApiResponse`, return it directly
       if (result instanceof ApiResponse) {

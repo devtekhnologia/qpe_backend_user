@@ -7,9 +7,8 @@ const userSchema = new Schema<IUserModel & Document>(
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null }, // Optional
-    roleId: { type: mongoose.Schema.Types.ObjectId, ref: "role", required: true },
-    schoolId: { type: mongoose.Schema.Types.ObjectId, ref: "school", default: null }, // Default null for admin
+    role_id: { type: mongoose.Schema.Types.ObjectId, ref: "role", required: true },
+    school_id: { type: mongoose.Schema.Types.ObjectId, ref: "school", default: null }, // Default null for admin
     status: { type: Number, default: 1 },
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null },
     created_at: { type: Number, required: true },
