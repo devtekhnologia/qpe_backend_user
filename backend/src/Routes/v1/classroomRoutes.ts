@@ -1,7 +1,7 @@
 import express from "express";
-import { validateRequest } from "../../Middlewares/validateMiddleware";
+import { validateRequest } from "../../middlewares/validateMiddleware";
 import { createClassroomSchema, updateClassroomSchema } from "../../Schema/commonSchema";
-import { classroomController } from "../../Controllers/classroomController";
+import { classroomController } from "../../controllers/classroomController";
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
-import { Data } from "../Interfaces/commonInterface";
-import School from "../Models/schoolModel";
+import { Data } from "../interfaces/commonInterface";
+import School from "../models/schoolModel";
 import { getEpochTime } from "../Utils/epochTime";
 
 export const SchoolService = {

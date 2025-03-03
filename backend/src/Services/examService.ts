@@ -1,5 +1,5 @@
-import { Data } from "../Interfaces/commonInterface";
-import Exam from "../Models/examModel";
+import { Data } from "../interfaces/commonInterface";
+import Exam from "../models/examModel";
 import { Types } from "mongoose";
 import { getEpochTime } from "../Utils/epochTime";
 

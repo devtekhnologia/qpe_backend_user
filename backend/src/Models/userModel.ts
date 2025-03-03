@@ -1,5 +1,5 @@
 import mongoose, { Schema, model, Document } from "mongoose";
-import { IUserModel } from "../Interfaces/userInterface";
+import { IUserModel } from "../interfaces/userInterface";
 
 // Define the user schema with additional fields
 const userSchema = new Schema<IUserModel & Document>(

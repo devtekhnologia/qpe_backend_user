@@ -5,19 +5,14 @@ import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
-import userRoutes from './src/Routes/v1/userRoutes'  
-import schoolRoutes from './src/Routes/v1/schoolRoutes';
-import classRoutes from './src/Routes/v1/classRoutes';
-import sectionRoutes from './src/Routes/v1/sectionRoutes';
-import subjectRoutes from './src/Routes/v1/subjectRoutes';
-import examRoutes from './src/Routes/v1/examRoutes';
-import classroomRoutes from './src/Routes/v1/classroomRoutes';
-import classExamRoutes from './src/Routes/v1/classExamRoutes';
+
+import masterRouter from "./src/Routes/v1/masterRoute"
 
 const app: Application = express();
 
 // MongoDB connection
-const mongoURI = process.env.MONGO_URI
+// const mongoURI = process.env.MONGO_URI
+const mongoURI = process.env.MONGO_URI_SH
 
 if (!mongoURI) {
   console.error('MongoDB connection string (MONGO_URI) is not defined in environment variables.');
@@ -41,21 +36,7 @@ const apiLimiter = rateLimit({
   headers: true,
 });
 
-app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));
-
-app.use('/api/v1/users/', userRoutes);
-app.use('/api/v1/schools/', schoolRoutes);
-app.use('/api/v1/class/', classRoutes);
-app.use('/api/v1/section/', sectionRoutes);
-app.use('/api/v1/subject/', subjectRoutes);
-app.use('/api/v1/exam/', examRoutes);
-app.use('/api/v1/classroom/', classroomRoutes);
-app.use('/api/v1/classexam/', classExamRoutes);
-
-// v1 route
-app.get('/api/v1/', (req: Request, res: Response) => {
-  res.status(200).json({ message: 'MongoDB connection successful' });
-});
+app.use("/api/v1", masterRouter)
 
 // 404 Handler
 app.use((req: Request, res: Response) => {
@@ -69,7 +50,7 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 // Set the port number
-const port = process.env.PORT || 4005;
+const port = process.env.APP_PORT || 4005;
 
 // Start the server
 app.listen(port, () => {

@@ -1,8 +1,8 @@
-import { IRegisterAdmin, IRegisterUser,ILoginUser,tokenInterface } from "../Interfaces/userInterface";
+import { IRegisterAdmin, IRegisterUser,ILoginUser,tokenInterface } from "../interfaces/userInterface";
 import bcrypt from "bcrypt";
 import { ApiResponse } from "../Utils/response";
-import UserModel from "../Models/userModel";
-import schoolModel from "../Models/schoolModel";
+import UserModel from "../models/userModel";
+import schoolModel from "../models/schoolModel";
 import { getEpochTime } from "../Utils/epochTime";
 import mongoose from "mongoose";
 import  Jwt  from "jsonwebtoken";
