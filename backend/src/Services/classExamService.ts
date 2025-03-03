@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { getEpochTime } from "../Utils/epochTime";
-import ClassExam from "../Models/classExamModel";
-import { Data } from "../Interfaces/classexamInterface";
+import ClassExam from "../models/classExamModel";
+import { Data } from "../interfaces/classexamInterface";
 
 export const classExamService = {
 

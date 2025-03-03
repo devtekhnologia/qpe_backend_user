@@ -1,5 +1,5 @@
 // src/types/express.d.ts
-import { User } from "../Models/userModel";  // Update this path based on your project structure
+import { User } from "../models/userModel";  // Update this path based on your project structure
 
 declare global {
   namespace Express {

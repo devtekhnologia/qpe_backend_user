@@ -1,18 +1,15 @@
-
-
-
-
-
 import { Router } from "express";
-import { UserController } from "../../Controllers/userController";
-import { validateRequest } from "../../Middlewares/validateMiddleware";
+import { UserController } from "../../controllers/userController";
+import { validateRequest } from "../../middlewares/validateMiddleware";
 
 
 import { registerUserSchema,registerAdminSchema} from "../../Schema/userSchema"; 
 
 const router = Router();
 
-router.post("/registerAdmin", validateRequest(registerAdminSchema), UserController.registerAdmin);
+router.post("/registerAdmin", 
+    //validateRequest(registerAdminSchema), 
+    UserController.registerAdmin);
 
 router.post("/registerUser", validateRequest(registerUserSchema), UserController.registerUser);
 

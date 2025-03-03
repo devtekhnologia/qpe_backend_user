@@ -23,10 +23,7 @@ export const registerAdminSchema = z.object({
   email: z.string().email("Invalid email format"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
   school_name: z.string().min(2, "School name is required"),
-   
-    role_id: z
-    .string()
-    .regex(/^[0-9a-fA-F]{24}$/, "Invalid user ID format"), // MongoDB ObjectId validation
+  role_id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid user ID format"), // MongoDB ObjectId validation
 });
   
 
