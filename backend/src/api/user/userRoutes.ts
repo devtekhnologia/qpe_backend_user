@@ -8,9 +8,7 @@ import UserController from "./userController";
 
 const router = Router();
 
-router.post("/registerAdmin", 
-    //validateRequest(registerAdminSchema), 
-    UserController.registerAdmin);
+router.post("/registerAdmin", validateRequest(registerAdminSchema), UserController.registerAdmin);
 
 //router.post("/registerUser", validateRequest(registerUserSchema), UserController.registerUser);
 
