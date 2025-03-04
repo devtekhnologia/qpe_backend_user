@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { getEpochTime } from "../../utils/epochTime";
 import { z } from "zod";
+import { commonValidations } from "../../utils/commonValidations";
 
 // Define TypeScript interface for Role Document
 export interface IRole extends Document {
@@ -11,7 +12,7 @@ export interface IRole extends Document {
 
 //Define Zod schema for Role validation
 const bodySchema = z.object({
-    name: z.string().min(2, "Role name must be at least 2 characters long"),
+    name: commonValidations.name,
 });
 
 //Wrap it in an object to match `ValidationSchema` structure
