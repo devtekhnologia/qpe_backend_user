@@ -1,7 +1,7 @@
-import { Data } from "../interfaces/commonInterface";
-import Subject from "../models/subjectModel";
 import { Types } from "mongoose";
-import { getEpochTime } from "../Utils/epochTime";
+import { getEpochTime } from "../../utils/epochTime";
+import Subject from "./subjectModel";
+import { Data } from "../../interfaces/commonInterface";
 
 export const subjectService = {
     createSubject: async (Data: Partial<Data>) => {

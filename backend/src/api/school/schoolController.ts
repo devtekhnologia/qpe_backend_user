@@ -76,8 +76,8 @@
 
 
 import { Request, Response, NextFunction } from "express";
-import { SchoolService } from "../Services/schoolService";
-import { ApiResponse } from "../Utils/response";
+import { ApiResponse } from "../../utils/response";
+import { SchoolService } from "./schoolService";
 
 export const SchoolController = {
     createSchool: async (req: Request, res: Response, next: NextFunction): Promise<any | void> => {

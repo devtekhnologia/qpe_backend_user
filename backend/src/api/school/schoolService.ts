@@ -1,6 +1,7 @@
-import { Data } from "../interfaces/commonInterface";
-import School from "../models/schoolModel";
-import { getEpochTime } from "../Utils/epochTime";
+import { Data } from "../../interfaces/commonInterface";
+import { getEpochTime } from "../../utils/epochTime";
+import School from "./schoolModel";
+
 
 export const SchoolService = {
     createSchool: async (schoolData: Partial<Data>) => {

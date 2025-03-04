@@ -1,5 +1,5 @@
 
-import { ApiResponse } from "../Utils/response";
+import { ApiResponse } from "../utils/response";
 
 export const handleServiceErrors = (serviceFunction: Function) => {
     return async (...args: any[]): Promise<ApiResponse> => {

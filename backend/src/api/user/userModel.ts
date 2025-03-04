@@ -1,36 +1,31 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { z } from "zod";
+import mongoose, { Schema, model, Document } from "mongoose";
+import { IUserModel } from "../../interfaces/userInterface"; 
 
-// Define Zod Schema for validation
-export const userSchemaValidation = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters long"),
-    email: z.string().email("Invalid email format"),
-    password: z.string().min(6, "Password must be at least 6 characters long"),
-    school_name: z.string().min(2, "School name is required"),
-    role_id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid user ID format") // MongoDB ObjectId validation
-});
-
-// Define TypeScript interface for User Document
-export interface IUser extends Document {
-    name: string;
-    email: string;
-    password: string;
-    school_name: string;
-    role_id: mongoose.Types.ObjectId;
-}
-
-// Define Mongoose Schema
-const userSchema = new Schema<IUser>(
-    {
-        name: { type: String, required: true, minlength: 2 },
-        email: { type: String, required: true, unique: true },
-        password: { type: String, required: true, minlength: 6 },
-        school_name: { type: String, required: true, minlength: 2 },
-        role_id: { type: Schema.Types.ObjectId, required: true, ref: "Role" } // Reference to Role collection
-    }
+// Define the user schema with additional fields
+const userSchema = new Schema<IUserModel & Document>(
+  {
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    password: { type: String, required: true },
+    role_id: { type: mongoose.Schema.Types.ObjectId, ref: "role", required: true },
+    school_id: { type: mongoose.Schema.Types.ObjectId, ref: "school", default: null }, // Default null for admin
+    status: { type: Number, default: 1 },
+    created_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null },
+    created_at: { type: Number, required: true },
+    updated_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null },
+    updated_at: { type: Number, default: null },
+    deleted_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null },
+    deleted_at: { type: Number, default: null },
+  },
+  {
+    timestamps: false, // Since timestamps are handled manually
+    versionKey: false,
+  }
 );
 
-// Create Mongoose Model
-const UserModel = mongoose.model<IUser>("User", userSchema);
+// Use a specific database connection
+const connection = mongoose.connection.useDb("qpeUsers");
+const UserModel = connection.model<IUserModel & Document>("user", userSchema);
 
 export default UserModel;
+

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { ApiResponse } from "../Utils/response";
-import { sectionService } from "../Services/sectionService";
+import { sectionService } from "./sectionService";
+import { ApiResponse } from "../../utils/response";
+
 
 export const sectionController = {
     createSection: async (req: Request, res: Response, next: NextFunction): Promise<any | void> => {

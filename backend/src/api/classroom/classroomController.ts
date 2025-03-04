@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { ApiResponse } from "../Utils/response";
-import { classroomService } from "../Services/classroomService";
+import { classroomService } from "./classroomService";
+import { ApiResponse } from "../../utils/response";
+
 
 export const classroomController = {
     createClassroom: async (req: Request, res: Response, next: NextFunction): Promise<any | void> => {

@@ -1,11 +1,11 @@
-import { IRegisterAdmin, IRegisterUser,ILoginUser,tokenInterface } from "../interfaces/userInterface";
 import bcrypt from "bcrypt";
-import { ApiResponse } from "../Utils/response";
-import UserModel from "../models/userModel";
-import schoolModel from "../models/schoolModel";
-import { getEpochTime } from "../Utils/epochTime";
+import { getEpochTime } from '../../utils/epochTime'; 
 import mongoose from "mongoose";
 import  Jwt  from "jsonwebtoken";
+import { ApiResponse } from '../../utils/response';
+import UserModel from "./userModel"; 
+import School from '../school/schoolModel';
+import { ILoginUser, IRegisterAdmin, IRegisterUser, tokenInterface } from "../../interfaces/userInterface";
 
 const UserService = {
   
@@ -27,11 +27,11 @@ console.log(existingUser)
       }
 
       // Check if school exists
-      let school = await schoolModel.findOne({ name: school_name.trim() }).lean();
+      let school = await School.findOne({ name: school_name.trim() }).lean();
 
 
       if (!school) {
-        school = await new schoolModel({
+        school = await new School({
           name: school_name.trim(),
           created_at: getEpochTime(),
           created_by: user_id || null, // Handle null case properly

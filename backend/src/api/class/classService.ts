@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
-import Class from "../models/classModel";
-import { getEpochTime } from "../Utils/epochTime";
-import { Data } from "../interfaces/commonInterface";
+import Class from "./classModel"; 
+import { getEpochTime } from "../../utils/epochTime";
+import { Data } from "../../interfaces/commonInterface"; 
 
 export const classService = {
     createClassName: async (Data: Partial<Data>) => {
