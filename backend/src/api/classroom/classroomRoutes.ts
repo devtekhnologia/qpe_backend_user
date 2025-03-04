@@ -5,9 +5,13 @@ import { classroomController } from "./classroomController";
 
 const router = express.Router();
 
-router.post("/addclassroom", validateRequest(createClassroomSchema), classroomController.createClassroom);
+router.post("/addclassroom", 
+    //validateRequest(createClassroomSchema), 
+    classroomController.createClassroom);
 router.get("/getClassroom/:id", classroomController.getClassroom);
-router.put("/updateclassroom", validateRequest(updateClassroomSchema), classroomController.updateclassroom);
+router.put("/updateclassroom", 
+    //validateRequest(updateClassroomSchema), 
+    classroomController.updateclassroom);
 router.delete("/deleteClassroom/:id", classroomController.deleteClassroom);
 router.get("/getClassroomSubjects/:id", classroomController.getClassroomSubjects);
 

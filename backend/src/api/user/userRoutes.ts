@@ -12,7 +12,7 @@ router.post("/registerAdmin",
     //validateRequest(registerAdminSchema), 
     UserController.registerAdmin);
 
-router.post("/registerUser", validateRequest(registerUserSchema), UserController.registerUser);
+//router.post("/registerUser", validateRequest(registerUserSchema), UserController.registerUser);
 
 router.post("/login", UserController.login);
 

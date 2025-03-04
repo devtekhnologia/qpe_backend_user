@@ -6,9 +6,13 @@ import { validateRequest } from "../../middlewares/validateMiddleware";
 
 const router = express.Router();
 
-router.post("/addSchool", validateRequest(createSchoolSchema), SchoolController.createSchool);
+router.post("/addSchool", 
+    //validateRequest(createSchoolSchema), 
+    SchoolController.createSchool);
 router.get("/getSchools/:id", SchoolController.getSchools);
-router.put("/updateSchool", validateRequest(updateSchema), SchoolController.updateSchool);
+router.put("/updateSchool", 
+    //validateRequest(updateSchema), 
+    SchoolController.updateSchool);
 router.delete("/deleteSchool/:id", SchoolController.deleteSchool);
 
 export default router;

@@ -5,9 +5,13 @@ import { sectionController } from "./sectionController";
 
 const router = express.Router();
 
-router.post("/addSection", validateRequest(createSchema), sectionController.createSection);
+router.post("/addSection", 
+    //validateRequest(createSchema), 
+    sectionController.createSection);
 router.get("/getSection/:id", sectionController.getSection);
-router.put("/updateSection", validateRequest(updateSchema), sectionController.updateSection);
+router.put("/updateSection", 
+    //validateRequest(updateSchema), 
+    sectionController.updateSection);
 router.delete("/deleteSection/:id", sectionController.deleteSection);
 
 export default router;
