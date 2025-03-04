@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { ApiResponse } from "../Utils/response";
-import { classService } from "../Services/classService";
+import { ApiResponse } from "../../utils/response";
+import { classService } from "./classService";
 
 export const classController = {
      createClassName: async (req: Request, res: Response, next: NextFunction): Promise<any | void> => {

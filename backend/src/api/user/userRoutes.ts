@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { UserController } from "../../controllers/userController";
+
+
+
+import { registerUserSchema,registerAdminSchema} from "../../schema/userSchema"; 
 import { validateRequest } from "../../middlewares/validateMiddleware";
-
-
-import { registerUserSchema,registerAdminSchema} from "../../Schema/userSchema"; 
+import UserController from "./userController";
 
 const router = Router();
 

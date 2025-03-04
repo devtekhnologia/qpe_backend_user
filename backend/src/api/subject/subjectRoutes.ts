@@ -1,7 +1,7 @@
 import express from "express";
-import { subjectController } from "../../controllers/subjectController";
+import { createSchema, updateSchema } from "../../schema/commonSchema";
 import { validateRequest } from "../../middlewares/validateMiddleware";
-import { createSchema, updateSchema } from "../../Schema/commonSchema";
+import { subjectController } from "./subjectController";
 
 const router = express.Router();
 

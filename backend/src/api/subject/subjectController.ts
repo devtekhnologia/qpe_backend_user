@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { ApiResponse } from "../Utils/response";
-import { subjectService } from "../Services/subjectService";
+import { subjectService } from "./subjectService";
+import { ApiResponse } from "../../utils/response";
+
 
 export const subjectController = {
      createSubject: async (req: Request, res: Response, next: NextFunction): Promise<any | void> => {
