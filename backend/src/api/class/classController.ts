@@ -9,9 +9,9 @@ export const classController = {
             if (classname instanceof ApiResponse) {
                 return res.status(classname.statusCode).json(classname);
             }
-            res.status(201).json(ApiResponse.created(classname.message, classname.result));
+            return ApiResponse.created(classname.message, classname.result);
         } catch (error: any) {
-            res.status(400).json(ApiResponse.badRequest(error.message));
+            return ApiResponse.badRequest(error.message);
         }
     },
 
@@ -22,9 +22,9 @@ export const classController = {
             if (classname instanceof ApiResponse) {
                 return res.status(classname.statusCode).json(classname);
             }
-            res.status(200).json(ApiResponse.success(classname.message, classname.result));
+            return ApiResponse.success(classname.message, classname.result);
         } catch (error: any) {
-            res.status(400).json(ApiResponse.badRequest(error.message));
+            return ApiResponse.badRequest(error.message);
         }
     },
 
@@ -37,9 +37,9 @@ export const classController = {
             if (updatedclassname instanceof ApiResponse) {
                 return res.status(updatedclassname.statusCode).json(updatedclassname);
             }
-            res.status(201).json(ApiResponse.success(updatedclassname.message, updatedclassname.result));
+            return ApiResponse.success(updatedclassname.message, updatedclassname.result);
         } catch (error: any) {
-            res.status(400).json(ApiResponse.badRequest(error.message));
+            return ApiResponse.badRequest(error.message);
         }
     },
 
@@ -50,9 +50,9 @@ export const classController = {
             if (classname instanceof ApiResponse) {
                 return res.status(classname.statusCode).json(classname);
             }
-            res.status(201).json(ApiResponse.created(classname.message, classname.result));
+            return ApiResponse.created(classname.message, classname.result);
         } catch (error: any) {
-            res.status(400).json(ApiResponse.badRequest(error.message));
+            return ApiResponse.badRequest(error.message);
         }
     }
 };

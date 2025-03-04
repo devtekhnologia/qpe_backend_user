@@ -10,9 +10,9 @@ export const classroomController = {
             if (result instanceof ApiResponse) {
                 return res.status(result.statusCode).json(result);
             }
-            res.status(201).json(ApiResponse.created(result.message, result.result));
+            return ApiResponse.created(result.message, result.result);
         } catch (error: any) {
-            res.status(400).json(ApiResponse.badRequest(error.message));
+            return ApiResponse.badRequest(error.message);
         }
     },
     getClassroom: async (req: Request, res: Response, next: NextFunction): Promise<void | any> => {
@@ -22,9 +22,9 @@ export const classroomController = {
             if (classname instanceof ApiResponse) {
                 return res.status(classname.statusCode).json(classname);
             }
-            res.status(200).json(ApiResponse.success(classname.message, classname.result));
+            return ApiResponse.success(classname.message, classname.result);
         } catch (error: any) {
-            res.status(400).json(ApiResponse.badRequest(error.message));
+            return ApiResponse.badRequest(error.message);
         }
     },
     updateclassroom: async (req: Request, res: Response, next: NextFunction): Promise<any | void> => {
@@ -33,9 +33,9 @@ export const classroomController = {
             if (result instanceof ApiResponse) {
                 return res.status(result.statusCode).json(result);
             }
-            res.status(200).json(ApiResponse.success(result.message, result.result));
+            return ApiResponse.success(result.message, result.result);
         } catch (error: any) {
-            res.status(400).json(ApiResponse.badRequest(error.message));
+            return ApiResponse.badRequest(error.message);
         }
     },
     deleteClassroom: async (req: Request, res: Response, next: NextFunction): Promise<void | any> => {
@@ -45,9 +45,9 @@ export const classroomController = {
             if (classname instanceof ApiResponse) {
                 return res.status(classname.statusCode).json(classname);
             }
-            res.status(201).json(ApiResponse.created(classname.message, classname.result));
+            return ApiResponse.created(classname.message, classname.result);
         } catch (error: any) {  
-            res.status(400).json(ApiResponse.badRequest(error.message));
+            return ApiResponse.badRequest(error.message);
         }
     },
     getClassroomSubjects: async (req: Request, res: Response, next: NextFunction): Promise<void | any> => {
@@ -57,9 +57,9 @@ export const classroomController = {
             if (classname instanceof ApiResponse) {
                 return res.status(classname.statusCode).json(classname);
             }
-            res.status(200).json(ApiResponse.success(classname.message, classname.result));
+            return ApiResponse.success(classname.message, classname.result);
         } catch (error: any) {
-            res.status(400).json(ApiResponse.badRequest(error.message));
+            return ApiResponse.badRequest(error.message);
         }
     },
 
