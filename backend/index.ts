@@ -2,8 +2,8 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-import masterRouter from "./src/Routes/v1/masterRoute"
-import { errorHandler } from './src/Utils/errorHandler';
+import masterRouter from "./src/routes/v1/masterRoute"
+import { errorHandler } from './src/utils/errorHandler';
 import { connectDB } from './src/initializers/mongoDb';
 import { apiLimiter } from './src/middlewares/rateLimiter';
 

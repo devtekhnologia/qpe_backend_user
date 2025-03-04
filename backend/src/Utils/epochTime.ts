@@ -1,17 +1,12 @@
-export function getEpochTime(): number {
-  return Math.floor(Date.now() / 1000);
+export function getEpochTime():string{
+  const currentEpochTimeInSeconds: number = Math.floor(Date.now() / 1000);
+  return currentEpochTimeInSeconds.toString();
 }
 
-interface TimeValidationParams {
-  time: string | string[];  // Accepts a single time string or an array of times
+export function dateToEpochTime(date: Date): number {
+  return Math.floor(date.getTime() / 1000);
 }
 
-export function isValidTimeFormat({ time }: TimeValidationParams): boolean {
-  const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-
-  if (Array.isArray(time)) {
-      return time.every(t => timeRegex.test(t));
-  }
-
-  return timeRegex.test(time);
+export function epochTimeToDate(epochTime: number): Date {
+  return new Date(epochTime * 1000);
 }

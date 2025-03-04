@@ -21,7 +21,7 @@ const classSchema = new Schema({
         required: true,
     },
     created_at: {
-        type: Number,
+        type: String,
         required: true,
     },
     updated_by: {
@@ -30,7 +30,7 @@ const classSchema = new Schema({
         required: false,
     },
     updated_at: {
-        type: Number,
+        type: String,
         required: false,
     },
 })
