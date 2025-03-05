@@ -1,18 +1,18 @@
 import { Request, Response, NextFunction } from "express";
 import { subjectService } from "./subjectService";
-import { ApiResponse } from "../../utils/response";
+import { ServiceResponse } from "../../utils/response";
 
 
 export const subjectController = {
      createSubject: async (req: Request, res: Response, next: NextFunction): Promise<any | void> => {
         try {
             const Subject = await subjectService.createSubject(req.body);
-            if (Subject instanceof ApiResponse) {
+            if (Subject instanceof ServiceResponse) {
                 return res.status(Subject.statusCode).json(Subject);
             }
-            return ApiResponse.created(Subject.message, Subject.result);
+            res.status(201).json(ServiceResponse.created(Subject.message, Subject.result));
         } catch (error: any) {
-            return ApiResponse.badRequest(error.message);
+            res.status(400).json(ServiceResponse.badRequest(error.message));
         }
     },
 
@@ -20,12 +20,12 @@ export const subjectController = {
         try {
             const school_id = req.params.id;
             const Subject = await subjectService.getSubject(school_id);
-            if (Subject instanceof ApiResponse) {
+            if (Subject instanceof ServiceResponse) {
                 return res.status(Subject.statusCode).json(Subject);
             }
-            return ApiResponse.success(Subject.message, Subject.result);
+            res.status(200).json(ServiceResponse.success(Subject.message, Subject.result));
         } catch (error: any) {
-            return ApiResponse.badRequest(error.message);
+            res.status(400).json(ServiceResponse.badRequest(error.message));
         }
     },
 
@@ -35,12 +35,12 @@ export const subjectController = {
             if (!updatedSubject) {
                 return res.status(404).json({status: false, message: "Class not found"});
             }
-            if (updatedSubject instanceof ApiResponse) {
+            if (updatedSubject instanceof ServiceResponse) {
                 return res.status(updatedSubject.statusCode).json(updatedSubject);
             }
-            return ApiResponse.success(updatedSubject.message, updatedSubject.result);
+            res.status(201).json(ServiceResponse.success(updatedSubject.message, updatedSubject.result));
         } catch (error: any) {
-            return ApiResponse.badRequest(error.message);
+            res.status(400).json(ServiceResponse.badRequest(error.message));
         }
     },
 
@@ -48,12 +48,12 @@ export const subjectController = {
         try {
             const Id = req.params.id;
             const Subject = await subjectService.deleteSubject(Id);
-            if (Subject instanceof ApiResponse) {
+            if (Subject instanceof ServiceResponse) {
                 return res.status(Subject.statusCode).json(Subject);
             }
-            return ApiResponse.created(Subject.message, Subject.result);
+            res.status(201).json(ServiceResponse.created(Subject.message, Subject.result));
         } catch (error: any) {
-            return ApiResponse.badRequest(error.message);
+            res.status(400).json(ServiceResponse.badRequest(error.message));
         }
     }
 };

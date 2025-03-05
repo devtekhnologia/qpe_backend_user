@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { getEpochTime } from '../../utils/epochTime'; 
 import mongoose from "mongoose";
 import  Jwt  from "jsonwebtoken";
-import { ApiResponse } from '../../utils/response';
+import { ServiceResponse } from '../../utils/response';
 import UserModel from "./userModel"; 
 import School from '../school/schoolModel';
 import { ILoginUser, IRegisterAdmin, IRegisterUser, tokenInterface } from "../../interfaces/userInterface";
@@ -16,14 +16,14 @@ const UserService = {
     school_name,
     role_id,
     user_id , 
-  }: IRegisterAdmin): Promise<ApiResponse | any> => {
+  }: IRegisterAdmin): Promise<ServiceResponse | any> => {
     try {
       // Check if user already exists
       const existingUser = await UserModel.findOne({ email }).lean();
 console.log(existingUser)
 
       if (existingUser) {
-        return ApiResponse.success("User already exists");
+        return ServiceResponse.success("User already exists");
       }
 
       // Check if school exists
@@ -72,7 +72,7 @@ console.log(existingUser)
 
     } catch (error) {
       console.error("Error in registerAdmin:", error);
-      return ApiResponse.internalServerError('Error in registerAdmin');
+      return ServiceResponse.internalServerError('Error in registerAdmin');
     }
   },
 
@@ -83,17 +83,17 @@ console.log(existingUser)
     school_id,
     role_id,
     user_id  // Default to null if not provided
-  }: IRegisterUser): Promise<ApiResponse | any > => {
+  }: IRegisterUser): Promise<ServiceResponse | any > => {
     try {
       // Check if user already exists
       const existingUser = await UserModel.findOne({ email }).lean();
       if (existingUser) {
-        return ApiResponse.success("User already exists");
+        return ServiceResponse.success("User already exists");
       }
 
       // Ensure `schoolId` is a valid ObjectId
       if (!mongoose.Types.ObjectId.isValid(school_id)) {
-        return ApiResponse.badRequest("Invalid schoolId format");
+        return ServiceResponse.badRequest("Invalid schoolId format");
       }
 
       // Hash the password
@@ -130,13 +130,13 @@ console.log(existingUser)
 
     } catch (error) {
       console.error("Error in registerUser:", error);
-      return ApiResponse.internalServerError("Failed to register user");
+      return ServiceResponse.internalServerError("Failed to register user");
     }
   },
 
-  loginUser: async ({ email, password }: ILoginUser): Promise<tokenInterface | ApiResponse> => {
+  loginUser: async ({ email, password }: ILoginUser): Promise<tokenInterface | ServiceResponse> => {
     if (!email || !password) {
-        return ApiResponse.badRequest("Email and password are required");
+        return ServiceResponse.badRequest("Email and password are required");
     }
   console.log(email)
     // Fetch user along with role details using aggregation
@@ -165,7 +165,7 @@ console.log(existingUser)
     console.log(user)
   
     if (!user.length) {
-        return ApiResponse.unauthorized("Invalid credentials");
+        return ServiceResponse.unauthorized("Invalid credentials");
     }
   console.log(user)
     const foundUser = user[0];
@@ -175,7 +175,7 @@ console.log(existingUser)
     // Validate password
     const isMatch = await bcrypt.compare(password, foundUser.password);
     if (!isMatch) {
-        return ApiResponse.unauthorized("Invalid credentials");
+        return ServiceResponse.unauthorized("Invalid credentials");
     }
   
     // Generate JWT token with role name
