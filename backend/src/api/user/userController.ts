@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 import UserService from "./userService";
-import { ApiResponse } from "../../utils/response";
+import { ServiceResponse } from "../../utils/response";
 
 export const UserController = {
   registerAdmin: async (req: Request, res: Response, next: NextFunction): Promise<any |void> => {
@@ -10,15 +10,15 @@ export const UserController = {
       const user_id = new mongoose.Types.ObjectId("5f92cbf10cf217478ba93561");
       const result = await UserService.registerAdmin({ name,email,password,school_name,role_id,user_id  });
 
-      // If `result` is an instance of `ApiResponse`, return it directly
-      if (result instanceof ApiResponse) {
+      // If `result` is an instance of `ServiceResponse`, return it directly
+      if (result instanceof ServiceResponse) {
         return res.status(result.statusCode).json(result);
       }
 
       // Otherwise, return success response
-      res.status(201).json(ApiResponse.created("Admin registered successfully", result));
+      return ServiceResponse.created("Admin registered successfully", result);
     } catch (error: any) {
-      res.status(400).json(ApiResponse.badRequest(error.message));
+      return ServiceResponse.badRequest(error.message);
     }
   },
 
@@ -29,15 +29,15 @@ export const UserController = {
      
       const result = await UserService.registerUser({ name,email,password,school_id,role_id,user_id  });
 
-      // If `result` is an instance of `ApiResponse`, return it directly
-      if (result instanceof ApiResponse) {
+      // If `result` is an instance of `ServiceResponse`, return it directly
+      if (result instanceof ServiceResponse) {
         return res.status(result.statusCode).json(result);
       }
 
       // Otherwise, return success response
-      res.status(201).json(ApiResponse.created("User registered successfully", result));
+      return ServiceResponse.created("User registered successfully", result);
     } catch (error: any) {
-      res.status(400).json(ApiResponse.badRequest(error.message));
+      return ServiceResponse.badRequest(error.message);
     }
   },
 
@@ -47,14 +47,14 @@ export const UserController = {
       const { email, password } = req.body;
       const result = await UserService.loginUser({ email, password });
 
-      // If `result` is an instance of `ApiResponse`, return it directly
-      if (result instanceof ApiResponse) {
+      // If `result` is an instance of `ServiceResponse`, return it directly
+      if (result instanceof ServiceResponse) {
         return res.status(result.statusCode).json(result);
       }
       // Otherwise, return success response
-      res.status(200).json(ApiResponse.success("Login successful", result));
+      return ServiceResponse.success("Login successful", result);
     } catch (error: any) {
-      res.status(400).json(ApiResponse.badRequest(error.message));
+      return ServiceResponse.badRequest(error.message);
     }
   }
 
