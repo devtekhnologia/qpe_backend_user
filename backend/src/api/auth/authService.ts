@@ -3,7 +3,7 @@ import { getEpochTime } from "../../utils/epochTime";
 import mongoose from "mongoose";
 import Jwt from "jsonwebtoken";
 import { ServiceResponse } from "../../utils/response";
-import UserModel from "./userModel";
+import UserModel from "./authModel";
 import School from "../school/schoolModel";
 import {
   ILoginUser,
@@ -12,7 +12,7 @@ import {
   tokenInterface,
 } from "../../interfaces/userInterface";
 
-const UserService = {
+const authService = {
   registerAdmin: async ({
     name,
     email,
@@ -24,7 +24,7 @@ const UserService = {
     try {
       // Check if user already exists
       const existingUser = await UserModel.findOne({ email }).lean();
-      console.log(existingUser);
+      //console.log(existingUser);
 
       if (existingUser) {
         return ServiceResponse.success("User already exists");
@@ -195,4 +195,4 @@ const UserService = {
   },
 };
 
-export default UserService;
+export default authService;

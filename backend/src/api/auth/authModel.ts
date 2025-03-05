@@ -24,8 +24,8 @@ const userSchema = new Schema<IUserModel & Document>(
 );
 
 // Use a specific database connection
-const connection = mongoose.connection.useDb("qpeUsers");
-const UserModel = connection.model<IUserModel & Document>("user", userSchema);
+//const connection = mongoose.connection.useDb("qpeUsers");
+const UserModel = mongoose.model<IUserModel & Document>("user", userSchema);
 
 export default UserModel;
 
