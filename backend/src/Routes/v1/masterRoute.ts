@@ -1,5 +1,4 @@
 import express, { Request, Response } from 'express';
-import schoolRoutes from "../../api/school/schoolRoutes"
 import { roleRouter } from '../../api/roles/roleRouter';
 import { authRouter } from '../../api/auth/authRouter';
 import { classRouter } from '../../api/class/classRoutes';
@@ -20,7 +19,6 @@ router.get('/', (req: Request, res: Response) => {
 router.use("/auth", authRouter) //one route for registering the user.Dont add multiple routes for different roles
 router.use("/role", roleRouter) //for adding roles in the DB
 
-router.use('/schools', schoolRoutes);
 router.use('/class', classRouter);
 router.use('/section', sectionRouter);
 router.use('/subject', subjectRouter);
