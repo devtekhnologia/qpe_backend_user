@@ -1,4 +1,37 @@
 import mongoose, { Schema } from "mongoose";
+import { commonValidations } from "../../utils/commonValidations";
+import { z } from "zod";
+
+export interface Data {
+    name: string;
+    school_id: string;
+    status: number;
+    created_by: string;
+    created_at: string;
+    user_id?: string
+}
+
+const create = z.object({
+    name: commonValidations.name,
+    school_id: commonValidations.id,
+    user_id: commonValidations.id,
+});
+
+export const createSchema = { body: create };
+
+const id = z.object({
+    id: commonValidations.id
+});
+
+export const idSchema = { params: id };
+
+const update = create.merge(
+    z.object({
+        id: commonValidations.id,
+    })
+);
+
+export const updateSchema = {body: update};
 
 const classSchema = new Schema({
     name: {
@@ -7,7 +40,7 @@ const classSchema = new Schema({
     },
     school_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"school",
+        ref: "school",
         required: true,
     },
     status: {
@@ -17,7 +50,7 @@ const classSchema = new Schema({
     },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:"user",
+        ref: "user",
         required: true,
     },
     created_at: {

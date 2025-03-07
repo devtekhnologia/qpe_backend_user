@@ -1,6 +1,5 @@
 import { Types } from "mongoose";
-import { Data } from "../../interfaces/commonInterface";
-import Section from "./sectionModel";
+import Section, { Data } from "./sectionModel";
 import { getEpochTime } from "../../utils/epochTime";
 
 export const sectionService = {

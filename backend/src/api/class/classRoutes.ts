@@ -1,13 +1,35 @@
-import express from "express";
+import express, { Router } from "express";
 import { classController } from "./classController";
-import { createSchema, idSchema, updateSchema } from "../../schema/commonSchema";
 import { validateRequest } from "../../middlewares/validateMiddleware";
+import { handleServiceResponse } from "../../utils/response";
+import { createSchema, idSchema, updateSchema } from "./classModel";
 
-const router = express.Router();
+export const classRouter: Router = (() => {
+    const router = express.Router();
 
-router.post("/addClassname", validateRequest(createSchema), classController.createClassName);
-router.get("/getClassname/:id", validateRequest(idSchema), classController.getClassName);
-router.put("/updateClassname", validateRequest(updateSchema), classController.updateClassName);
-router.delete("/deleteClassname/:id", validateRequest(idSchema), classController.deleteClassName);
+    // Add a new class
+    router.post("/add", validateRequest(createSchema), async (req, res) => {
+        const response = await classController.create(req);
+        handleServiceResponse(response, res);
+    });
 
-export default router;
+    // Get all classes
+    router.get("/:id", validateRequest(idSchema), async (req, res) => {
+        const response = await classController.fetch(req);
+        handleServiceResponse(response, res);
+    });
+
+    // update the existing class
+    router.put("/update", validateRequest(updateSchema), async (req, res) => {
+        const response = await classController.update(req);
+        handleServiceResponse(response, res);
+    });
+
+    // delete class
+    router.delete("/:id", validateRequest(idSchema), async (req, res) => {
+        const response = await classController.delete(req);
+        handleServiceResponse(response, res);
+    });
+
+    return router;
+})();

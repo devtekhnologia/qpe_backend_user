@@ -1,13 +1,35 @@
-import express from "express";
+import express, { Router } from "express";
 import { validateRequest } from "../../middlewares/validateMiddleware";
-import { createSchema, idSchema, updateSchema } from "../../schema/commonSchema";
 import { sectionController } from "./sectionController";
+import { createSchema, idSchema, updateSchema } from "./sectionModel";
+import { handleServiceResponse } from "../../utils/response";
 
-const router = express.Router();
+export const sectionRouter: Router = (() => {
+    const router = express.Router();
 
-router.post("/addSection", validateRequest(createSchema), sectionController.createSection);
-router.get("/getSection/:id", validateRequest(idSchema), sectionController.getSection);
-router.put("/updateSection", validateRequest(updateSchema), sectionController.updateSection);
-router.delete("/deleteSection/:id", validateRequest(idSchema), sectionController.deleteSection);
+    // Add a new section
+    router.post("/add", validateRequest(createSchema), async (req, res) => {
+        const response = await sectionController.create(req);
+        handleServiceResponse(response, res);
+    });
 
-export default router;
+    // Get all sections
+    router.get("/:id", validateRequest(idSchema), async (req, res) => {
+        const response = await sectionController.fetch(req);
+        handleServiceResponse(response, res);
+    });
+
+    // update the existing section
+    router.put("/update", validateRequest(updateSchema), async (req, res) => {
+        const response = await sectionController.update(req);
+        handleServiceResponse(response, res);
+    });
+
+    // delete section
+    router.delete("/:id", validateRequest(idSchema), async (req, res) => {
+        const response = await sectionController.delete(req);
+        handleServiceResponse(response, res);
+    });
+
+    return router;
+})();

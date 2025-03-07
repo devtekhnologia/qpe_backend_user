@@ -1,6 +1,5 @@
 import { Types } from "mongoose";
-import { Data } from "../../interfaces/classroomInterface";
-import Classroom from "./classroomModel";
+import Classroom, { Data } from "./classroomModel";
 import { getEpochTime } from "../../utils/epochTime";
 
 

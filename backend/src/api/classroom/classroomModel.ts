@@ -1,4 +1,41 @@
 import mongoose, { Schema } from "mongoose";
+import { z } from "zod";
+import { commonValidations } from "../../utils/commonValidations";
+
+export interface Data {
+    class_id: string;
+    section_id: string;
+    subject_ids: string[]; // Change from string to string[]
+    school_id: string;
+    status: number;
+    created_by: string;
+    created_at: string;
+    user_id?: string
+}
+
+const createClassroom = z.object({
+    class_id: commonValidations.id,
+    section_id: commonValidations.id,
+    subject_ids: z.array(commonValidations.id), // Change subject_id to subject_ids (array)
+    school_id: commonValidations.id,
+    user_id: commonValidations.id,
+});
+
+export const createSchema = { body: createClassroom };
+
+export const id = z.object({
+    id: commonValidations.id
+});
+
+export const idSchema = { params: id };
+
+const updateClassroom = createClassroom.merge(
+    z.object({
+        id: commonValidations.id,
+    })
+);
+
+export const updateSchema = { body: updateClassroom };
 
 const classroomSchema = new Schema({
     class_id: {

@@ -1,14 +1,41 @@
-import express from "express";
-import { createClassroomSchema, idSchema, updateClassroomSchema } from "../../schema/commonSchema";
+import express, { Router } from "express";
 import { validateRequest } from "../../middlewares/validateMiddleware";
 import { classroomController } from "./classroomController";
+import { createSchema, idSchema, updateSchema } from "./classroomModel";
+import { handleServiceResponse } from "../../utils/response";
 
-const router = express.Router();
+export const classroomRouter: Router = (() => {
+    const router = express.Router();
 
-router.post("/addclassroom", validateRequest(createClassroomSchema), classroomController.createClassroom);
-router.get("/getClassroom/:id", validateRequest(idSchema), classroomController.getClassroom);
-router.put("/updateclassroom", validateRequest(updateClassroomSchema), classroomController.updateclassroom);
-router.delete("/deleteClassroom/:id", validateRequest(idSchema), classroomController.deleteClassroom);
-router.get("/getClassroomSubjects/:id", validateRequest(idSchema), classroomController.getClassroomSubjects);
+    // Add classroom
+    router.post("/add", validateRequest(createSchema), async (req, res) => {
+        const response = await classroomController.create(req);
+        handleServiceResponse(response, res);
+    });
 
-export default router;
+    // Get all classrooms
+    router.get("/:id", validateRequest(idSchema), async (req, res) => {
+        const response = await classroomController.fetch(req);
+        handleServiceResponse(response, res);
+    });
+
+    // Update existing classroom
+    router.put("/update", validateRequest(updateSchema), async (req, res) => {
+        const response = await classroomController.update(req);
+        handleServiceResponse(response, res);
+    });
+
+    // Delete classroom
+    router.delete("/:id", validateRequest(idSchema), async (req, res) => {
+        const response = await classroomController.delete(req);
+        handleServiceResponse(response, res);
+    });
+
+    // Get all classrooms
+    router.get("/getClassroomSubjects/:id", validateRequest(idSchema), async (req, res) => {
+        const response = await classroomController.getClassroomSubjects(req);
+        handleServiceResponse(response, res);
+    });
+
+    return router;
+})();

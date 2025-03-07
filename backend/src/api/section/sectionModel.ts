@@ -1,4 +1,37 @@
 import mongoose, { Schema } from "mongoose";
+import { z } from "zod";
+import { commonValidations } from "../../utils/commonValidations";
+
+export interface Data {
+    name: string;
+    school_id: string;
+    status: number;
+    created_by: string;
+    created_at: string;
+    user_id?: string
+}
+
+const create = z.object({
+    name: commonValidations.name,
+    school_id: commonValidations.id,
+    user_id: commonValidations.id,
+});
+
+export const createSchema = { body: create };
+
+const id = z.object({
+    id: commonValidations.id
+});
+
+export const idSchema = { params: id };
+
+const update = create.merge(
+    z.object({
+        id: commonValidations.id,
+    })
+);
+
+export const updateSchema = {body: update};
 
 const sectionSchema = new Schema({
     name: {
