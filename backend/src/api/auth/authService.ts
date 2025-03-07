@@ -1,198 +1,136 @@
 import bcrypt from "bcrypt";
-import { getEpochTime } from "../../utils/epochTime";
 import mongoose from "mongoose";
 import Jwt from "jsonwebtoken";
+import { getEpochTime } from "../../utils/epochTime";
 import { ServiceResponse } from "../../utils/response";
-import UserModel from "./authModel";
-import School from "../school/schoolModel";
-import {
-  ILoginUser,
-  IRegisterAdmin,
-  IRegisterUser,
-  tokenInterface,
-} from "../../interfaces/userInterface";
+import UserModel, { User } from "./authModel";
+
+// JWT Secret Keys (Should be stored in environment variables)
+const ACCESS_TOKEN_SECRET = process.env.JWT_ACCESS_SECRET || "your_access_token_secret";
+const REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_SECRET || "your_refresh_token_secret";
 
 const authService = {
-  registerAdmin: async ({
+  // =================== Register Admin ===================
+  createAdmin: async ({
     name,
     email,
     password,
-    school_name,
     role_id,
-    user_id,
-  }: IRegisterAdmin): Promise<ServiceResponse | any> => {
+    school_name,
+    school_registration_id,
+  }: any): Promise<ServiceResponse | any> => {
     try {
       // Check if user already exists
-      const existingUser = await UserModel.findOne({ email }).lean();
-      //console.log(existingUser);
-
-      if (existingUser) {
-        return ServiceResponse.success("User already exists");
-      }
-
-      // Check if school exists
-      let school = await School.findOne({ name: school_name.trim() }).lean();
-
-      if (!school) {
-        school = await new School({
-          name: school_name.trim(),
-          created_at: getEpochTime(),
-          created_by: user_id || null, // Handle null case properly
-        }).save();
-      }
+      const existingUser = await UserModel.findOne({ email }).lean<User>();
+      if (existingUser) return ServiceResponse.badRequest("User already exists");
 
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Generate timestamp
-      const createdAt = getEpochTime();
-
-      // Create the Admin user
+      // Create the Admin User
       const newUser = new UserModel({
         name: name.trim(),
         email: email.trim(),
         password: hashedPassword,
-        school_id: school._id, // Assign schoolId from created/found school
         role_id,
-        created_by: user_id,
-        created_at: createdAt,
+        school_name,
+        school_registration_id,
+        created_by: null,
         updated_by: null,
+        created_at: getEpochTime(),
         updated_at: null,
-        deleted_by: null,
-        deleted_at: null,
+        refresh_token: null, // Initially null
       });
 
-      const savedUser = await newUser.save();
+      const savedUser: any = await newUser.save();
 
-      return {
+      // Generate Access & Refresh Tokens
+      const accessToken = generateAccessToken(savedUser._id.toString(), savedUser.role_id.toString());
+      const refreshToken = generateRefreshToken(savedUser._id.toString());
+
+      // Store Refresh Token in DB
+      await UserModel.updateOne({ _id: savedUser._id }, { refresh_token: refreshToken });
+
+      return ServiceResponse.created("Admin registered successfully", {
+        user_id: savedUser._id.toString(),
         email: savedUser.email,
-        password: savedUser.password,
-        user_id: savedUser._id,
-        role_id: savedUser.role_id,
-        school_id: savedUser.school_id,
-      };
+        role_id: savedUser.role_id.toString(),
+        school_registration_id: savedUser.school_registration_id,
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
     } catch (error) {
-      console.error("Error in registerAdmin:", error);
       return ServiceResponse.internalServerError("Error in registerAdmin");
     }
   },
 
-  registerUser: async ({
-    name,
-    email,
-    password,
-    school_id,
-    role_id,
-    user_id, // Default to null if not provided
-  }: IRegisterUser): Promise<ServiceResponse | any> => {
+  // =================== Login User ===================
+  loginUser: async ({ email, password }: any): Promise<ServiceResponse | any> => {
     try {
-      // Check if user already exists
-      const existingUser = await UserModel.findOne({ email }).lean();
-      if (existingUser) {
-        return ServiceResponse.success("User already exists");
-      }
+      const user: any = await UserModel.findOne({ email }).lean<User>();
+      if (!user) return ServiceResponse.unauthorized("Invalid credentials");
 
-      // Ensure `schoolId` is a valid ObjectId
-      if (!mongoose.Types.ObjectId.isValid(school_id)) {
-        return ServiceResponse.badRequest("Invalid schoolId format");
-      }
+      // Validate password
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) return ServiceResponse.unauthorized("Invalid credentials");
 
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
+      // Generate Tokens
+      const accessToken = generateAccessToken(user._id.toString(), user.role_id.toString());
+      const refreshToken = generateRefreshToken(user._id.toString());
 
-      // Generate timestamp
-      const createdAt = getEpochTime();
+      // Update Refresh Token in DB
+      await UserModel.updateOne({ _id: user._id }, { refresh_token: refreshToken });
 
-      // Create the user
-      const newUser = new UserModel({
-        name: name.trim(),
-        email: email.trim(),
-        password: hashedPassword,
-        school_id: new mongoose.Types.ObjectId(school_id),
-        role_id,
-        created_by: user_id,
-        created_at: createdAt,
-        updated_by: null,
-        updated_at: null,
-        deleted_by: null,
-        deleted_at: null,
+      return ServiceResponse.success("Login successful", {
+        user_id: user._id.toString(),
+        role_id: user.role_id.toString(),
+        access_token: accessToken,
+        refresh_token: refreshToken,
       });
-
-      const savedUser = await newUser.save();
-
-      return {
-        email: savedUser.email,
-        password: savedUser.password,
-        user_id: savedUser._id,
-        role_id: savedUser.role_id,
-        school_id: savedUser.school_id,
-      };
     } catch (error) {
-      console.error("Error in registerUser:", error);
-      return ServiceResponse.internalServerError("Failed to register user");
+      return ServiceResponse.internalServerError("Login failed");
     }
   },
 
-  loginUser: async ({
-    email,
-    password,
-  }: ILoginUser): Promise<tokenInterface | ServiceResponse> => {
-    if (!email || !password) {
-      return ServiceResponse.badRequest("Email and password are required");
+  // =================== Refresh Access Token ===================
+  refreshAccessToken: async (refreshToken: string): Promise<ServiceResponse | any> => {
+    try {
+      if (!refreshToken) return ServiceResponse.badRequest("Refresh token required");
+
+      // Find user with the provided refresh token
+      const user: any = await UserModel.findOne({ refresh_token: refreshToken }).lean<User>();
+      if (!user) return ServiceResponse.unauthorized("Invalid refresh token");
+
+      // Verify Refresh Token
+      try {
+        const decoded: any = Jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+        if (!decoded) return ServiceResponse.unauthorized("Invalid refresh token");
+      } catch (err) {
+        return ServiceResponse.unauthorized("Invalid refresh token");
+      }
+
+      // Generate new Access Token
+      const newAccessToken = generateAccessToken(user._id.toString(), user.role_id.toString());
+
+      return ServiceResponse.success("Access token refreshed", { access_token: newAccessToken });
+    } catch (error) {
+      return ServiceResponse.internalServerError("Could not refresh token");
     }
-    console.log(email);
-    // Fetch user along with role details using aggregation
-    const user = await UserModel.aggregate([
-      { $match: { email } },
-      {
-        $lookup: {
-          from: "roles",
-          localField: "role_id",
-          foreignField: "_id",
-          as: "roleInfo",
-        },
-      },
-      { $unwind: "$roleInfo" },
-      {
-        $project: {
-          email: 1,
-          password: 1,
-          schoolId: 1,
-          role_id: 1,
-          roleName: "$roleInfo.roleName",
-        },
-      },
-    ]).exec();
-
-    console.log(user);
-
-    if (!user.length) {
-      return ServiceResponse.unauthorized("Invalid credentials");
-    }
-    console.log(user);
-    const foundUser = user[0];
-
-    console.log(foundUser);
-
-    // Validate password
-    const isMatch = await bcrypt.compare(password, foundUser.password);
-    if (!isMatch) {
-      return ServiceResponse.unauthorized("Invalid credentials");
-    }
-
-    // Generate JWT token with role name
-    const token = Jwt.sign(
-      {
-        user_id: foundUser._id,
-        role_id: foundUser.role_id,
-        role_name: foundUser.role_name,
-      },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "1d" }
-    );
-
-    return { token };
   },
+};
+
+// ================== JWT Token Generation Functions ==================
+
+const generateAccessToken = (userId: string, roleId: string) => {
+  return Jwt.sign({ userId, roleId }, ACCESS_TOKEN_SECRET, {
+    expiresIn: process.env.JWT_ACCESS_EXPIRY || "15m",
+  });
+};
+
+const generateRefreshToken = (userId: string) => {
+  return Jwt.sign({ userId }, REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.JWT_REFRESH_EXPIRY || "7d",
+  });
 };
 
 export default authService;
