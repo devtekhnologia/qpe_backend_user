@@ -89,7 +89,7 @@ export class ServiceResponse<T = unknown> {
   }
 }
 
-// ✅ Middleware to send ServiceResponse using res
+// Middleware to send ServiceResponse using res
 export const handleServiceResponse = (serviceResponse: ServiceResponse<any>, response: Response) => {
   return response.status(serviceResponse.statusCode).json(serviceResponse);
 };

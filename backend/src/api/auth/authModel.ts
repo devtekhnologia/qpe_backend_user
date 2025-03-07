@@ -10,6 +10,7 @@ export interface User extends Document {
   email: string;
   password: string;
   role_id: mongoose.Types.ObjectId;
+  role_name: string;
   school_name: string;
   school_registration_id?: mongoose.Types.ObjectId; // Null for Admin, required for others
   status: number; // 1: active, 0: inactive
@@ -30,6 +31,19 @@ const adminBodySchema = z.object({
   school_name: commonValidations.name, // Admin registers with school name
   school_registration_id: commonValidations.string
 });
+
+// login validation schema 
+
+const loginBodySchema = z.object({
+  email: commonValidations.email,
+  password: commonValidations.password,
+});
+
+// Wrap it in an object to match validation middleware structure
+export const loginRequestSchema = {
+  body: loginBodySchema,
+};
+
 
 // Wrap it in an object to match validation middleware structure
 export const adminRequestSchema = {
@@ -58,6 +72,7 @@ const userSchema = new Schema<User>(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
     role_id: { type: mongoose.Schema.Types.ObjectId, ref: "role", required: true },
+    role_name: { type: String},
     school_registration_id: { type: String, required: true, trim: true },
     status: { type: Number, default: 1, enum: [0, 1] },
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null },

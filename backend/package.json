@@ -4,7 +4,7 @@
   },
   "name": "my-node-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Qpe backend",
   "main": "index.ts",
   "scripts": {
     "build": "tsc",

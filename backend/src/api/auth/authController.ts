@@ -10,12 +10,14 @@ export const authController = {
       const { name, email, password, school_name, school_registration_id } = req.body;
       const admin: any = await RoleModel.findOne({ name: "Admin" });
       const admin_id = admin._id;
+      const role_name = admin.name
 
       const result = await authService.createAdmin({
         name,
         email,
         password,
         role_id: admin_id,
+        role_name: role_name,
         school_name,
         school_registration_id,
       });
@@ -31,7 +33,7 @@ export const authController = {
       const { email, password } = req.body;
       const result = await authService.loginUser({ email, password });
 
-      return ServiceResponse.success("Login successful", result);
+      return result;
     } catch (error: any) {
       return ServiceResponse.badRequest(error.message);
     }
