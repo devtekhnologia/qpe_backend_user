@@ -17,7 +17,7 @@ export const classroomService = {
         const existing = await Classroom.findOne({
             class_id: Data.class_id,
             section_id: Data.section_id,
-            school_id: Data.school_id,
+            reg_id: Data.reg_id,
         });
 
         if (existing) {
@@ -48,7 +48,7 @@ export const classroomService = {
                 class_id: Data.class_id,
                 section_id: Data.section_id,
                 subject_ids: newSubjectIds, // Store subject_ids as ObjectId[]
-                school_id: Data.school_id,
+                reg_id: Data.reg_id,
                 status: 1, // Set status to 1 for new classrooms
                 created_by: Data.user_id,
                 created_at: getEpochTime(),
@@ -59,12 +59,12 @@ export const classroomService = {
         }
     },
 
-    getClassroom: async (school_id: string) => {
+    getClassroom: async (reg_id: string) => {
         try {
             const classrooms = await Classroom.aggregate([
                 { 
                     $match: { 
-                        school_id: new Types.ObjectId(school_id), 
+                        reg_id: new Types.ObjectId(reg_id), 
                         status: 1 
                     } 
                 },
@@ -142,7 +142,7 @@ export const classroomService = {
                 {
                     $project: {
                         _id: 0,
-                        school_id: 1,
+                        reg_id: 1,
                         class_id: 1,
                         class_name: { $ifNull: ["$classInfo.name", "Unknown Class"] },
                         section_id: 1,
@@ -204,7 +204,7 @@ export const classroomService = {
         // Update other fields and ensure ObjectId conversion
         existing.class_id = Data.class_id ? new Types.ObjectId(Data.class_id) : existing.class_id;
         existing.section_id = Data.section_id ? new Types.ObjectId(Data.section_id) : existing.section_id;
-        existing.school_id = Data.school_id ? new Types.ObjectId(Data.school_id) : existing.school_id;
+        existing.reg_id = Data.reg_id ? new Types.ObjectId(Data.reg_id) : existing.reg_id;
 
         if (existing.status === 0) {
             existing.status = 1;
@@ -261,7 +261,7 @@ export const classroomService = {
                 {
                     $project: {
                         _id: 0,
-                        school_id: 1,
+                        reg_id: 1,
                         subject_ids: 1,
                         subject_names: {
                             $cond: {

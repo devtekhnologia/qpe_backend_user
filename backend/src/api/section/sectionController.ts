@@ -15,8 +15,8 @@ export const sectionController = {
 
     fetch: async (req: Request): Promise<ServiceResponse> => {
         try {
-            const schoolId = req.params.id;
-            const section = await sectionService.getSection(schoolId);
+            const regId = req.params.id;
+            const section = await sectionService.getSection(regId);
             return ServiceResponse.success(section.message, section.result);
         } catch (error: any) {
             return ServiceResponse.badRequest(error.message);

@@ -7,7 +7,7 @@ export const sectionService = {
     createSection: async (Data: Partial<Data>) => {
         const existingSection = await Section.findOne({
             name: Data.name,
-            school_id: Data.school_id,
+            reg_idv: Data.reg_id,
         });
 
         if (existingSection) {
@@ -27,7 +27,7 @@ export const sectionService = {
         // If section doesn't exist, create a new one
         const result = new Section({
             name: Data.name,
-            school_id: Data.school_id,
+            reg_id: Data.reg_id,
             created_by: Data.user_id, // Mapping user_id to created_by
             created_at: getEpochTime(), // Setting created_at as epoch time
         });
@@ -36,9 +36,9 @@ export const sectionService = {
         return { message: "Section created successfully", result };
     },
 
-    getSection: async (school_id: string) => {
+    getSection: async (reg_id: string) => {
         // return await Section.find({ school_id: school_id, status: 1 }).sort({ _id: -1 }); // Filter by institute_id
-        const result = await Section.find({ school_id: school_id, status: 1 }).sort({ _id: -1 });
+        const result = await Section.find({ reg_id: reg_id, status: 1 }).sort({ _id: -1 });
 
         if (result.length > 0) {
             return { message: "Sections retrieved successfully", result };

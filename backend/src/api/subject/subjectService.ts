@@ -7,7 +7,7 @@ export const subjectService = {
 
         const existing = await Subject.findOne({
             name: Data.name,
-            school_id: Data.school_id,
+            reg_id: Data.reg_id,
         });
 
         if (existing) {
@@ -26,7 +26,7 @@ export const subjectService = {
 
         const result = new Subject({
             name: Data.name,
-            school_id: Data.school_id,
+            reg_id: Data.reg_id,
             created_by: Data.user_id, // Mapping user_id to created_by
             created_at: getEpochTime(), // Setting created_at as epoch time
         });
@@ -34,8 +34,8 @@ export const subjectService = {
         return { message: "Subject created successfully", result };
     },
 
-    getSubject: async (school_id: string) => {
-        const result = await Subject.find({ school_id: school_id, status: 1 }).sort({ _id: -1 }); // Filter by institute_id
+    getSubject: async (reg_id: string) => {
+        const result = await Subject.find({ reg_id: reg_id, status: 1 }).sort({ _id: -1 }); // Filter by institute_id
 
         if (result.length > 0) {
             return { message: "Subject retrieved successfully", result };

@@ -15,8 +15,8 @@ export const subjectController = {
 
     fetch: async (req: Request): Promise<ServiceResponse> => {
         try {
-            const school_id = req.params.id;
-            const Subject = await subjectService.getSubject(school_id);
+            const reg_id = req.params.id;
+            const Subject = await subjectService.getSubject(reg_id);
             return ServiceResponse.success(Subject.message, Subject.result);
         } catch (error: any) {
             return ServiceResponse.badRequest(error.message);

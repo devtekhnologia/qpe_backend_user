@@ -6,7 +6,7 @@ export interface Data {
     class_id: string;
     section_id: string;
     subject_ids: string[]; // Change from string to string[]
-    school_id: string;
+    reg_id: string;
     status: number;
     created_by: string;
     created_at: string;
@@ -17,7 +17,7 @@ const createClassroom = z.object({
     class_id: commonValidations.id,
     section_id: commonValidations.id,
     subject_ids: z.array(commonValidations.id), // Change subject_id to subject_ids (array)
-    school_id: commonValidations.id,
+    reg_id: commonValidations.id,
     user_id: commonValidations.id,
 });
 
@@ -55,7 +55,7 @@ const classroomSchema = new Schema({
             required: true,
         }
     ],
-    school_id: {
+    reg_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "school",
         required: true,
