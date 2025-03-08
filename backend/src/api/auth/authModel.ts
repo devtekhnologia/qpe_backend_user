@@ -73,7 +73,7 @@ const userSchema = new Schema<User>(
     password: { type: String, required: true },
     role_id: { type: mongoose.Schema.Types.ObjectId, ref: "role", required: true },
     role_name: { type: String},
-    school_registration_id: { type: String, required: true, trim: true },
+    school_registration_id: { type: String, required: true, trim: true, unique: true },
     status: { type: Number, default: 1, enum: [0, 1] },
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null },
     updated_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null },

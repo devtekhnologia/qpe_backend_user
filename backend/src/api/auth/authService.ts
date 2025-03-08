@@ -22,34 +22,40 @@ const authService = {
     role_name,
     school_name,
     school_registration_id,
-  }: any): Promise<ServiceResponse | any> => {
+}: any): Promise<ServiceResponse | any> => {
     try {
-      // Check if user already exists
-      const existingUser = await UserModel.findOne({ email }).lean<User>();
-      if (existingUser)
-        return ServiceResponse.badRequest("User already exists");
+        // Check for an existing user with the same email
+        const existingEmail = await UserModel.findOne({ email }).lean<User>();
+        if (existingEmail) {
+            return ServiceResponse.badRequest("Email already in use");
+        }
 
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
+        // Check for an existing user with the same school registration ID
+        const existingSchool = await UserModel.findOne({ school_registration_id }).lean<User>();
+        if (existingSchool) {
+            return ServiceResponse.badRequest("School Registration ID already in use");
+        }
 
-      // Create the Admin User
-      const newUser = new UserModel({
-        name: name.trim(),
-        email: email.trim(),
-        password: hashedPassword,
-        role_id,
-        role_name,
-        school_name,
-        school_registration_id,
-        created_by: null,
-        updated_by: null,
-        created_at: getEpochTime(),
-        updated_at: null,
-        refresh_token: null, // Initially null
-      });
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-      const savedUser: any = await newUser.save();
+        // Create the Admin User
+        const newUser = new UserModel({
+            name: name.trim(),
+            email: email.trim(),
+            password: hashedPassword,
+            role_id,
+            role_name,
+            school_name,
+            school_registration_id,
+            created_by: null,
+            updated_by: null,
+            created_at: getEpochTime(),
+            updated_at: null,
+            refresh_token: null, // Initially null
+        });
 
+<<<<<<< HEAD
       // Generate Access & Refresh Tokens
       const accessToken = generateAccessToken({
         user_id: savedUser._id.toString(),
@@ -64,26 +70,45 @@ const authService = {
         role_name: savedUser.role_name.toString(),
         school_registration_id: savedUser.school_registration_id
       });
+=======
+        const savedUser: any = await newUser.save();
+>>>>>>> d59b9081f5f79cb83635155d6b157106914b2c32
 
-      // Store Refresh Token in DB
-      await UserModel.updateOne(
-        { _id: savedUser._id },
-        { refresh_token: refreshToken }
-      );
+        // Generate Access & Refresh Tokens
+        const accessToken = generateAccessToken(
+            savedUser._id.toString(),
+            savedUser.role_id.toString(),
+            savedUser.role_name.toString(),
+            savedUser.school_registration_id
+        );
+        const refreshToken = generateRefreshToken(
+            savedUser._id.toString(),
+            savedUser.role_id.toString(),
+            savedUser.role_name.toString(),
+            savedUser.school_registration_id
+        );
 
-      return ServiceResponse.created("Admin registered successfully", {
-        user_id: savedUser._id.toString(),
-        email: savedUser.email,
-        role_id: savedUser.role_id.toString(),
-        role_name: savedUser.role_name,
-        school_registration_id: savedUser.school_registration_id,
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      });
+        // Store Refresh Token in DB
+        await UserModel.updateOne(
+            { _id: savedUser._id },
+            { refresh_token: refreshToken }
+        );
+
+        return ServiceResponse.created("Admin registered successfully", {
+            user_id: savedUser._id.toString(),
+            email: savedUser.email,
+            role_id: savedUser.role_id.toString(),
+            role_name: savedUser.role_name,
+            school_registration_id: savedUser.school_registration_id,
+            access_token: accessToken,
+            refresh_token: refreshToken,
+        });
+
     } catch (error) {
-      return ServiceResponse.internalServerError("Error in registerAdmin");
+        return ServiceResponse.internalServerError("Error in registerAdmin");
     }
-  },
+},
+
 
   // =================== Login User ===================
   loginUser: async ({

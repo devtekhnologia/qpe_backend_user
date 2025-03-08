@@ -35,7 +35,7 @@ export const roleController = {
       const allRoles = await RoleModel.find();
 
       if (allRoles.length === 0) {
-        return ServiceResponse.notFound("No roles found");
+        return ServiceResponse.success("No roles found");
       }
 
       return ServiceResponse.success("Roles fetched successfully", allRoles);
