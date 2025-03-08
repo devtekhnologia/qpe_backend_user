@@ -6,6 +6,7 @@ import RoleModel from "../roles/roleModel";
 
 export const authController = {
   registerAdmin: async (req: Request): Promise<any | void> => {
+    console.log(req);
     try {
       const { name, email, password, school_name, school_registration_id } = req.body;
       const admin: any = await RoleModel.findOne({ name: "Admin" });

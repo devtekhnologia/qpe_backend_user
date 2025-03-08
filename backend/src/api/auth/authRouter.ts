@@ -1,7 +1,7 @@
 import { Router } from "express";
 import authController from "./authController";
 import { handleServiceResponse } from "../../utils/response";
-import { validateRequest } from "../../Middlewares/validateMiddleware";
+import { validateRequest } from "../../middlewares/validateMiddleware";
 import { adminRequestSchema, loginRequestSchema, userRequestSchema } from "./authModel";
 
 export const authRouter = (() => {

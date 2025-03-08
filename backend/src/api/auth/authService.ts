@@ -4,6 +4,7 @@ import Jwt from "jsonwebtoken";
 import { getEpochTime } from "../../utils/epochTime";
 import { ServiceResponse } from "../../utils/response";
 import UserModel, { User } from "./authModel";
+import { generateAccessToken, generateRefreshToken } from "../../utils/jwtUtils";
 
 // JWT Secret Keys (Should be stored in environment variables)
 const ACCESS_TOKEN_SECRET =
@@ -50,18 +51,19 @@ const authService = {
       const savedUser: any = await newUser.save();
 
       // Generate Access & Refresh Tokens
-      const accessToken = generateAccessToken(
-        savedUser._id.toString(),
-        savedUser.role_id.toString(),
-        savedUser.role_name.toString(),
-        savedUser.school_registration_id
-      );
-      const refreshToken = generateRefreshToken(
-        savedUser._id.toString(),
-        savedUser.role_id.toString(),
-        savedUser.role_name.toString(),
-        savedUser.school_registration_id
-      );
+      const accessToken = generateAccessToken({
+        user_id: savedUser._id.toString(),
+        role_id: savedUser.role_id.toString(),
+        role_name: savedUser.role_name.toString(),
+        school_registration_id: savedUser.school_registration_id
+      });
+
+      const refreshToken = generateRefreshToken({
+        user_id: savedUser._id.toString(),
+        role_id: savedUser.role_id.toString(),
+        role_name: savedUser.role_name.toString(),
+        school_registration_id: savedUser.school_registration_id
+      });
 
       // Store Refresh Token in DB
       await UserModel.updateOne(
@@ -98,18 +100,19 @@ const authService = {
         return ServiceResponse.unauthorized("Invalid credentials");
 
       // Generate Tokens
-      const accessToken = generateAccessToken(
-        user._id.toString(),
-        user.role_id.toString(),
-        user.role_name,
-        user.school_registration_id
-      );
-      const refreshToken = generateRefreshToken(
-        user._id.toString(),
-        user.role_id.toString(),
-        user.role_name,
-        user.school_registration_id
-      );
+      const accessToken = generateAccessToken({
+        user_id: user._id.toString(),
+        role_id: user.role_id.toString(),
+        role_name: user.role_name,
+        school_registration_id: user.school_registration_id
+      });
+
+      const refreshToken = generateRefreshToken({
+        user_id: user._id.toString(),
+        role_id: user.role_id.toString(),
+        role_name: user.role_name,
+        school_registration_id: user.school_registration_id
+      });
 
       // Update Refresh Token in DB
       await UserModel.updateOne(
@@ -152,12 +155,12 @@ const authService = {
       }
 
       // Generate new Access Token
-      const newAccessToken = generateAccessToken(
-        user._id.toString(),
-        user.role_id.toString(),
-        user.role_name,
-        user.school_registration_id
-      );
+      const newAccessToken = generateAccessToken({
+        user_id: user._id.toString(),
+        role_id: user.role_id.toString(),
+        role_name: user.role_name,
+        school_registration_id: user.school_registration_id
+      });
 
       return ServiceResponse.success("Access token refreshed", {
         access_token: newAccessToken,
@@ -168,36 +171,5 @@ const authService = {
   },
 };
 
-// ================== JWT Token Generation Functions ==================
-
-const generateAccessToken = (
-  user_id: string,
-  role_id: string,
-  role_name: string,
-  school_registration_id: string
-) => {
-  return Jwt.sign(
-    { user_id, role_id, role_name, school_registration_id },
-    ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: process.env.JWT_ACCESS_EXPIRY || "15m",
-    }
-  );
-};
-
-const generateRefreshToken = (
-  user_id: string,
-  role_id: string,
-  role_name: string,
-  school_registration_id: string
-) => {
-  return Jwt.sign(
-    { user_id, role_id, role_name, school_registration_id },
-    REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: process.env.JWT_REFRESH_EXPIRY || "7d",
-    }
-  );
-};
 
 export default authService;

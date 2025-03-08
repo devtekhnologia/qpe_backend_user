@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 import masterRouter from "./src/routes/v1/masterRoute"
+
 import { errorHandler } from './src/utils/errorHandler';
 import { connectDB } from './src/initializers/mongoDb';
 import { apiLimiter } from './src/middlewares/rateLimiter';
