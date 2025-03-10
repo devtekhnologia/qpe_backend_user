@@ -79,8 +79,12 @@ export const authController = {
 
   refreshToken: async (req: Request): Promise<any | void> => {
     try {
-      const { refresh_token } = req.body;
-      const result = await authService.refreshAccessToken(refresh_token);
+      const authHeader: any = req.header("Authorization");
+      if (!authHeader) {
+        return ServiceResponse.unauthorized("No refresh token provided")
+      }
+      const token = authHeader.replace("Bearer ", "");
+      const result = await authService.refreshAccessToken(token);
 
       return ServiceResponse.success("Access token refreshed", result);
     } catch (error: any) {

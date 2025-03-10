@@ -12,12 +12,13 @@ export const checkJWT = async (
   next: NextFunction
 ): Promise<any> => {
   try {
-    const urlsWithoutToken = ["/role", "/auth/login"];
-    const skipVerify = urlsWithoutToken.includes(req.url.split("?")[0]);
+    const urlsWithoutToken = ["/role", "/auth/login", "/auth/refresh-token"];
+    const skipVerify = urlsWithoutToken.includes(req.url);
     const authHeader = req.header("Authorization");
-    if (skipVerify && !authHeader) {
+    if (skipVerify) {
       return next();
-    } else if (!authHeader) {
+    }
+    if (!authHeader) {
       return res.status(401).send({ message: "Authorization header missing" });
     }
     const token = authHeader.replace("Bearer ", "");
@@ -29,6 +30,6 @@ export const checkJWT = async (
 
     next();
   } catch (err) {
-    return res.status(401).send({message: "Invalid Token"});
+    return res.status(401).send({ message: "Invalid Token" });
   }
 };
