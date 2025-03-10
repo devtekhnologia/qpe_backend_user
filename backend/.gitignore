@@ -3,11 +3,6 @@
 # dependencies
 /node_modules
 
-
-#backend
-/frontend
-
-
 # production
 /build
 
