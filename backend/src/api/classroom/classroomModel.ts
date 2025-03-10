@@ -56,8 +56,7 @@ const classroomSchema = new Schema({
         }
     ],
     reg_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "school",
+        type: String,
         required: true,
     },
     status: {

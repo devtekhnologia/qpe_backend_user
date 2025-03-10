@@ -3,7 +3,7 @@ import { ServiceResponse } from "../../utils/response";
 import { classService } from "./classService";
 
 export const classController = {
-     create: async (req: Request): Promise<ServiceResponse> => {
+    create: async (req: Request): Promise<ServiceResponse> => {
         try {
             const classname = await classService.createClassName(req.body);
             return ServiceResponse.created(classname.message, classname.result);

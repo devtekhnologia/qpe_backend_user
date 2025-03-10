@@ -21,93 +21,132 @@ const authService = {
     role_id,
     role_name,
     school_name,
-    school_registration_id,
-}: any): Promise<ServiceResponse | any> => {
+    reg_id,
+  }: any): Promise<ServiceResponse | any> => {
     try {
-        // Check for an existing user with the same email
-        const existingEmail = await UserModel.findOne({ email }).lean<User>();
-        if (existingEmail) {
-            return ServiceResponse.badRequest("Email already in use");
-        }
+      // Check for an existing user with the same email
+      const existingEmail = await UserModel.findOne({ email }).lean<User>();
+      if (existingEmail) {
+        return ServiceResponse.badRequest("Email already in use");
+      }
 
-        // Check for an existing user with the same school registration ID
-        const existingSchool = await UserModel.findOne({ school_registration_id }).lean<User>();
-        if (existingSchool) {
-            return ServiceResponse.badRequest("School Registration ID already in use");
-        }
+      // Check for an existing admin with the same school registration ID
+      const existingAdmin = await UserModel.findOne({
+        reg_id,
+        role_name: "Admin" // Ensure we checking only for Admins
+      }).lean<User>();
 
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
+      if (existingAdmin) {
+        return ServiceResponse.badRequest("An admin already exists for this school");
+      }
 
-        // Create the Admin User
-        const newUser = new UserModel({
-            name: name.trim(),
-            email: email.trim(),
-            password: hashedPassword,
-            role_id,
-            role_name,
-            school_name,
-            school_registration_id,
-            created_by: null,
-            updated_by: null,
-            created_at: getEpochTime(),
-            updated_at: null,
-            refresh_token: null, // Initially null
-        });
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-<<<<<<< HEAD
-      // Generate Access & Refresh Tokens
+      // Create the Admin User
+      const newUser = new UserModel({
+        name: name.trim(),
+        email: email.trim(),
+        password: hashedPassword,
+        role_id,
+        role_name,
+        school_name,
+        reg_id,
+        created_by: null,
+        updated_by: null,
+        created_at: getEpochTime(),
+        updated_at: null,
+        refresh_token: null, // Initially null
+      });
+
+      const savedUser: any = await newUser.save();
+
       const accessToken = generateAccessToken({
         user_id: savedUser._id.toString(),
         role_id: savedUser.role_id.toString(),
         role_name: savedUser.role_name.toString(),
-        school_registration_id: savedUser.school_registration_id
+        reg_id: savedUser.reg_id
       });
 
       const refreshToken = generateRefreshToken({
         user_id: savedUser._id.toString(),
         role_id: savedUser.role_id.toString(),
         role_name: savedUser.role_name.toString(),
-        school_registration_id: savedUser.school_registration_id
+        reg_id: savedUser.reg_id
       });
-=======
-        const savedUser: any = await newUser.save();
->>>>>>> d59b9081f5f79cb83635155d6b157106914b2c32
 
-        // Generate Access & Refresh Tokens
-        const accessToken = generateAccessToken(
-            savedUser._id.toString(),
-            savedUser.role_id.toString(),
-            savedUser.role_name.toString(),
-            savedUser.school_registration_id
-        );
-        const refreshToken = generateRefreshToken(
-            savedUser._id.toString(),
-            savedUser.role_id.toString(),
-            savedUser.role_name.toString(),
-            savedUser.school_registration_id
-        );
+      // Store Refresh Token in DB
+      await UserModel.updateOne(
+        { _id: savedUser._id },
+        { refresh_token: refreshToken }
+      );
 
-        // Store Refresh Token in DB
-        await UserModel.updateOne(
-            { _id: savedUser._id },
-            { refresh_token: refreshToken }
-        );
-
-        return ServiceResponse.created("Admin registered successfully", {
-            user_id: savedUser._id.toString(),
-            email: savedUser.email,
-            role_id: savedUser.role_id.toString(),
-            role_name: savedUser.role_name,
-            school_registration_id: savedUser.school_registration_id,
-            access_token: accessToken,
-            refresh_token: refreshToken,
-        });
+      return ServiceResponse.created("Admin registered successfully", {
+        user_id: savedUser._id.toString(),
+        email: savedUser.email,
+        role_id: savedUser.role_id.toString(),
+        role_name: savedUser.role_name,
+        reg_id: savedUser.reg_id,
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
 
     } catch (error) {
-        return ServiceResponse.internalServerError("Error in registerAdmin");
+      return ServiceResponse.internalServerError("Error in registerAdmin");
     }
-},
+  },
+
+  createUser: async ({
+    name,
+    email,
+    password,
+    role_id,
+    role_name,
+    school_name,
+    reg_id,
+    created_by
+  }: any): Promise<ServiceResponse | any> => {
+
+    try {
+
+      const existingEmail = await UserModel.findOne({ email }).lean<User>();
+
+      if (existingEmail) {
+        return ServiceResponse.badRequest("Email already exist");
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const newUser = new UserModel({
+        name: name.trim(),
+        email: email.trim(),
+        password: hashedPassword,
+        role_id,
+        role_name,
+        school_name,
+        reg_id,
+        created_by,
+        updated_by: null,
+        created_at: getEpochTime(),
+        updated_at: null,
+        refresh_token: null,
+      });
+
+      const savedUser: any = await newUser.save();
+
+      return ServiceResponse.created("User registered successfully", {
+        user_id: savedUser._id.toString(),
+        email: savedUser.email,
+        role_id: savedUser.role_id.toString(),
+        role_name: savedUser.role_name,
+        reg_id: savedUser.reg_id,
+        access_token: null,
+        refresh_token: null,
+      });
+    } catch (err: any) {
+      ServiceResponse.internalServerError("Failed to register user");
+    }
+  },
 
 
   // =================== Login User ===================
@@ -129,14 +168,14 @@ const authService = {
         user_id: user._id.toString(),
         role_id: user.role_id.toString(),
         role_name: user.role_name,
-        school_registration_id: user.school_registration_id
+        reg_id: user.reg_id
       });
 
       const refreshToken = generateRefreshToken({
         user_id: user._id.toString(),
         role_id: user.role_id.toString(),
         role_name: user.role_name,
-        school_registration_id: user.school_registration_id
+        reg_id: user.reg_id
       });
 
       // Update Refresh Token in DB
@@ -184,7 +223,7 @@ const authService = {
         user_id: user._id.toString(),
         role_id: user.role_id.toString(),
         role_name: user.role_name,
-        school_registration_id: user.school_registration_id
+        reg_id: user.reg_id
       });
 
       return ServiceResponse.success("Access token refreshed", {

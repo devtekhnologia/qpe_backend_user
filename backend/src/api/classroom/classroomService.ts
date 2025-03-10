@@ -62,82 +62,88 @@ export const classroomService = {
     getClassroom: async (reg_id: string) => {
         try {
             const classrooms = await Classroom.aggregate([
-                { 
-                    $match: { 
-                        reg_id: new Types.ObjectId(reg_id), 
-                        status: 1 
-                    } 
+                {
+                    $match: {
+                        reg_id: new Types.ObjectId(reg_id),
+                        status: 1
+                    }
                 },
-    
+
                 // Lookup Class details with status = 1
                 {
                     $lookup: {
                         from: "classes",
                         let: { classId: "$class_id" },
                         pipeline: [
-                            { 
-                                $match: { 
-                                    $expr: { $and: [
-                                        { $eq: ["$_id", "$$classId"] },
-                                        { $eq: ["$status", 1] } 
-                                    ]}
-                                } 
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            { $eq: ["$_id", "$$classId"] },
+                                            { $eq: ["$status", 1] }
+                                        ]
+                                    }
+                                }
                             }
                         ],
                         as: "classInfo"
                     }
                 },
-                { 
-                    $unwind: { 
-                        path: "$classInfo", 
-                        preserveNullAndEmptyArrays: true 
-                    } 
+                {
+                    $unwind: {
+                        path: "$classInfo",
+                        preserveNullAndEmptyArrays: true
+                    }
                 },
-    
+
                 // Lookup Section details with status = 1
                 {
                     $lookup: {
                         from: "sections",
                         let: { sectionId: "$section_id" },
                         pipeline: [
-                            { 
-                                $match: { 
-                                    $expr: { $and: [
-                                        { $eq: ["$_id", "$$sectionId"] },
-                                        { $eq: ["$status", 1] } 
-                                    ]}
-                                } 
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            { $eq: ["$_id", "$$sectionId"] },
+                                            { $eq: ["$status", 1] }
+                                        ]
+                                    }
+                                }
                             }
                         ],
                         as: "sectionInfo"
                     }
                 },
-                { 
-                    $unwind: { 
-                        path: "$sectionInfo", 
-                        preserveNullAndEmptyArrays: true 
-                    } 
+                {
+                    $unwind: {
+                        path: "$sectionInfo",
+                        preserveNullAndEmptyArrays: true
+                    }
                 },
-    
+
                 // Lookup Subject details with status = 1
                 {
                     $lookup: {
                         from: "subjects",
                         let: { subjectIds: "$subject_ids" },
                         pipeline: [
-                            { 
-                                $match: { 
-                                    $expr: { $and: [
-                                        { $in: ["$_id", "$$subjectIds"] },
-                                        { $eq: ["$status", 1] }
-                                    ]}
-                                } 
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            { $in: ["$_id", "$$subjectIds"] },
+                                            { $eq: ["$status", 1] }
+                                        ]
+                                    }
+                                }
                             }
                         ],
                         as: "subjectInfo"
                     }
                 },
-    
+
                 // Format the output
                 {
                     $project: {
@@ -158,11 +164,11 @@ export const classroomService = {
                     }
                 }
             ]);
-    
+
             if (!classrooms || classrooms.length === 0) {
                 return { message: "No classrooms found for this school." };
             }
-    
+
             return {
                 message: "Classrooms fetched successfully",
                 result: classrooms
@@ -171,8 +177,8 @@ export const classroomService = {
             return { message: "Error fetching classrooms", error: error };
         }
     },
-    
-    
+
+
 
     updateclassroom: async (Data: Partial<Data> & { id: string }) => {
         if (!Data.subject_ids || Data.subject_ids.length === 0) {
@@ -204,7 +210,7 @@ export const classroomService = {
         // Update other fields and ensure ObjectId conversion
         existing.class_id = Data.class_id ? new Types.ObjectId(Data.class_id) : existing.class_id;
         existing.section_id = Data.section_id ? new Types.ObjectId(Data.section_id) : existing.section_id;
-        existing.reg_id = Data.reg_id ? new Types.ObjectId(Data.reg_id) : existing.reg_id;
+        existing.reg_id = Data.reg_id ? Data.reg_id : existing.reg_id;
 
         if (existing.status === 0) {
             existing.status = 1;
@@ -231,32 +237,34 @@ export const classroomService = {
     getClassroomSubjects: async (classroom_id: string) => {
         try {
             const classroomSubjects = await Classroom.aggregate([
-                { 
-                    $match: { 
-                        _id: new Types.ObjectId(classroom_id), 
-                        status: 1 
-                    } 
+                {
+                    $match: {
+                        _id: new Types.ObjectId(classroom_id),
+                        status: 1
+                    }
                 },
-    
+
                 // Lookup Subject details with status = 1
                 {
                     $lookup: {
                         from: "subjects",
                         let: { subjectIds: "$subject_ids" },
                         pipeline: [
-                            { 
-                                $match: { 
-                                    $expr: { $and: [
-                                        { $in: ["$_id", "$$subjectIds"] },
-                                        { $eq: ["$status", 1] }
-                                    ]}
-                                } 
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            { $in: ["$_id", "$$subjectIds"] },
+                                            { $eq: ["$status", 1] }
+                                        ]
+                                    }
+                                }
                             }
                         ],
                         as: "subjectInfo"
                     }
                 },
-    
+
                 // Format the output
                 {
                     $project: {
@@ -273,11 +281,11 @@ export const classroomService = {
                     }
                 }
             ]);
-    
+
             if (!classroomSubjects || classroomSubjects.length === 0) {
                 return { message: "No classrooms found for this school." };
             }
-    
+
             return {
                 message: "Classroom Subjects fetched successfully",
                 result: classroomSubjects

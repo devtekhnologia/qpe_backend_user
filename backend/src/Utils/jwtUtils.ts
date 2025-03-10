@@ -10,12 +10,12 @@ interface Token {
   user_id?: String;
   role_id?: String;
   role_name?: String;
-  school_registration_id?: String;
+  reg_id?: String;
 }
 
 export function verifyToken(token: string) {
   try {
-    return jwt.verify(token, jwtSecret);
+    return jwt.verify(token, ACCESS_TOKEN_SECRET);
   } catch (error) {
     throw error;
   }
@@ -27,7 +27,7 @@ export const generateAccessToken = (payload: Token) => {
       user_id: payload.user_id,
       role_id: payload.role_id,
       role_name: payload.role_name,
-      school_registration_id: payload.school_registration_id
+      reg_id: payload.reg_id
     },
     ACCESS_TOKEN_SECRET,
     {
@@ -42,7 +42,7 @@ export const generateRefreshToken = (payload: Token) => {
       user_id: payload.user_id,
       role_id: payload.role_id,
       role_name: payload.role_name,
-      school_registration_id: payload.school_registration_id
+      reg_id: payload.reg_id
     },
     REFRESH_TOKEN_SECRET,
     {
