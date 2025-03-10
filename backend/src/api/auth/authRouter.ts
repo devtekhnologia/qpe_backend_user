@@ -13,7 +13,7 @@ export const authRouter = (() => {
         handleServiceResponse(response, res);
     })
 
-    router.post("/register-user", validateRequest(userRequestSchema), checkJWT, async (req, res) => {
+    router.post("/register-user", validateRequest(userRequestSchema), async (req, res) => {
         const response = await authController.registerUser(req);
         handleServiceResponse(response, res);
     });

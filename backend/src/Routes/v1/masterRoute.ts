@@ -16,9 +16,9 @@ router.get("/", (req: Request, res: Response) => {
 });
 
 // router.use('/users', userRoutes);
-router.use("/auth", authRouter);
 router.use("/role", roleRouter); //for adding roles in the DB
 router.use(checkJWT);
+router.use("/auth", authRouter);
 
 router.use("/class", classRouter);
 router.use("/section", sectionRouter);

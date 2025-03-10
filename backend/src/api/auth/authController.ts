@@ -34,6 +34,7 @@ export const authController = {
     try {
       const { name, email, password, role_name, school_name } = req.body;
       const { user_id, reg_id } = req.client;
+      console.log("req.client", req.client)
 
       // Check if the user registering is an Admin
       const admin: any = await UserModel.findById(user_id);
