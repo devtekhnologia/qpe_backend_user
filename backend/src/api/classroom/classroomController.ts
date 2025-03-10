@@ -14,8 +14,8 @@ export const classroomController = {
     },
     fetch: async (req: Request): Promise<ServiceResponse> => {
         try {
-            const school_id = req.params.id;
-            const classname = await classroomService.getClassroom(school_id);
+            const reg_id = req.params.id;
+            const classname = await classroomService.getClassroom(reg_id);
             return ServiceResponse.success(classname.message, classname.result);
         } catch (error: any) {
             return ServiceResponse.badRequest(error.message);

@@ -4,6 +4,7 @@ import Jwt from "jsonwebtoken";
 import { getEpochTime } from "../../utils/epochTime";
 import { ServiceResponse } from "../../utils/response";
 import UserModel, { User } from "./authModel";
+import { generateAccessToken, generateRefreshToken } from "../../utils/jwtUtils";
 
 // JWT Secret Keys (Should be stored in environment variables)
 const ACCESS_TOKEN_SECRET =
@@ -20,76 +21,132 @@ const authService = {
     role_id,
     role_name,
     school_name,
-    school_registration_id,
-}: any): Promise<ServiceResponse | any> => {
+    reg_id,
+  }: any): Promise<ServiceResponse | any> => {
     try {
-        // Check for an existing user with the same email
-        const existingEmail = await UserModel.findOne({ email }).lean<User>();
-        if (existingEmail) {
-            return ServiceResponse.badRequest("Email already in use");
-        }
+      // Check for an existing user with the same email
+      const existingEmail = await UserModel.findOne({ email }).lean<User>();
+      if (existingEmail) {
+        return ServiceResponse.badRequest("Email already in use");
+      }
 
-        // Check for an existing user with the same school registration ID
-        const existingSchool = await UserModel.findOne({ school_registration_id }).lean<User>();
-        if (existingSchool) {
-            return ServiceResponse.badRequest("School Registration ID already in use");
-        }
+      // Check for an existing admin with the same school registration ID
+      const existingAdmin = await UserModel.findOne({
+        reg_id,
+        role_name: "Admin" // Ensure we checking only for Admins
+      }).lean<User>();
 
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
+      if (existingAdmin) {
+        return ServiceResponse.badRequest("An admin already exists for this school");
+      }
 
-        // Create the Admin User
-        const newUser = new UserModel({
-            name: name.trim(),
-            email: email.trim(),
-            password: hashedPassword,
-            role_id,
-            role_name,
-            school_name,
-            school_registration_id,
-            created_by: null,
-            updated_by: null,
-            created_at: getEpochTime(),
-            updated_at: null,
-            refresh_token: null, // Initially null
-        });
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-        const savedUser: any = await newUser.save();
+      // Create the Admin User
+      const newUser = new UserModel({
+        name: name.trim(),
+        email: email.trim(),
+        password: hashedPassword,
+        role_id,
+        role_name,
+        school_name,
+        reg_id,
+        created_by: null,
+        updated_by: null,
+        created_at: getEpochTime(),
+        updated_at: null,
+        refresh_token: null, // Initially null
+      });
 
-        // Generate Access & Refresh Tokens
-        const accessToken = generateAccessToken(
-            savedUser._id.toString(),
-            savedUser.role_id.toString(),
-            savedUser.role_name.toString(),
-            savedUser.school_registration_id
-        );
-        const refreshToken = generateRefreshToken(
-            savedUser._id.toString(),
-            savedUser.role_id.toString(),
-            savedUser.role_name.toString(),
-            savedUser.school_registration_id
-        );
+      const savedUser: any = await newUser.save();
 
-        // Store Refresh Token in DB
-        await UserModel.updateOne(
-            { _id: savedUser._id },
-            { refresh_token: refreshToken }
-        );
+      const accessToken = generateAccessToken({
+        user_id: savedUser._id.toString(),
+        role_id: savedUser.role_id.toString(),
+        role_name: savedUser.role_name.toString(),
+        reg_id: savedUser.reg_id
+      });
 
-        return ServiceResponse.created("Admin registered successfully", {
-            user_id: savedUser._id.toString(),
-            email: savedUser.email,
-            role_id: savedUser.role_id.toString(),
-            role_name: savedUser.role_name,
-            school_registration_id: savedUser.school_registration_id,
-            access_token: accessToken,
-            refresh_token: refreshToken,
-        });
+      const refreshToken = generateRefreshToken({
+        user_id: savedUser._id.toString(),
+        role_id: savedUser.role_id.toString(),
+        role_name: savedUser.role_name.toString(),
+        reg_id: savedUser.reg_id
+      });
+
+      // Store Refresh Token in DB
+      await UserModel.updateOne(
+        { _id: savedUser._id },
+        { refresh_token: refreshToken }
+      );
+
+      return ServiceResponse.created("Admin registered successfully", {
+        user_id: savedUser._id.toString(),
+        email: savedUser.email,
+        role_id: savedUser.role_id.toString(),
+        role_name: savedUser.role_name,
+        reg_id: savedUser.reg_id,
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
 
     } catch (error) {
-        return ServiceResponse.internalServerError("Error in registerAdmin");
+      return ServiceResponse.internalServerError("Error in registerAdmin");
     }
-},
+  },
+
+  createUser: async ({
+    name,
+    email,
+    password,
+    role_id,
+    role_name,
+    school_name,
+    reg_id,
+    created_by
+  }: any): Promise<ServiceResponse | any> => {
+
+    try {
+
+      const existingEmail = await UserModel.findOne({ email }).lean<User>();
+
+      if (existingEmail) {
+        return ServiceResponse.badRequest("Email already exist");
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const newUser = new UserModel({
+        name: name.trim(),
+        email: email.trim(),
+        password: hashedPassword,
+        role_id,
+        role_name,
+        school_name,
+        reg_id,
+        created_by,
+        updated_by: null,
+        created_at: getEpochTime(),
+        updated_at: null,
+        refresh_token: null,
+      });
+
+      const savedUser: any = await newUser.save();
+
+      return ServiceResponse.created("User registered successfully", {
+        user_id: savedUser._id.toString(),
+        email: savedUser.email,
+        role_id: savedUser.role_id.toString(),
+        role_name: savedUser.role_name,
+        reg_id: savedUser.reg_id,
+        access_token: null,
+        refresh_token: null,
+      });
+    } catch (err: any) {
+      ServiceResponse.internalServerError("Failed to register user");
+    }
+  },
 
 
   // =================== Login User ===================
@@ -107,18 +164,19 @@ const authService = {
         return ServiceResponse.unauthorized("Invalid credentials");
 
       // Generate Tokens
-      const accessToken = generateAccessToken(
-        user._id.toString(),
-        user.role_id.toString(),
-        user.role_name,
-        user.school_registration_id
-      );
-      const refreshToken = generateRefreshToken(
-        user._id.toString(),
-        user.role_id.toString(),
-        user.role_name,
-        user.school_registration_id
-      );
+      const accessToken = generateAccessToken({
+        user_id: user._id.toString(),
+        role_id: user.role_id.toString(),
+        role_name: user.role_name,
+        reg_id: user.reg_id
+      });
+
+      const refreshToken = generateRefreshToken({
+        user_id: user._id.toString(),
+        role_id: user.role_id.toString(),
+        role_name: user.role_name,
+        reg_id: user.reg_id
+      });
 
       // Update Refresh Token in DB
       await UserModel.updateOne(
@@ -161,12 +219,12 @@ const authService = {
       }
 
       // Generate new Access Token
-      const newAccessToken = generateAccessToken(
-        user._id.toString(),
-        user.role_id.toString(),
-        user.role_name,
-        user.school_registration_id
-      );
+      const newAccessToken = generateAccessToken({
+        user_id: user._id.toString(),
+        role_id: user.role_id.toString(),
+        role_name: user.role_name,
+        reg_id: user.reg_id
+      });
 
       return ServiceResponse.success("Access token refreshed", {
         access_token: newAccessToken,
@@ -177,36 +235,5 @@ const authService = {
   },
 };
 
-// ================== JWT Token Generation Functions ==================
-
-const generateAccessToken = (
-  user_id: string,
-  role_id: string,
-  role_name: string,
-  school_registration_id: string
-) => {
-  return Jwt.sign(
-    { user_id, role_id, role_name, school_registration_id },
-    ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: process.env.JWT_ACCESS_EXPIRY || "15m",
-    }
-  );
-};
-
-const generateRefreshToken = (
-  user_id: string,
-  role_id: string,
-  role_name: string,
-  school_registration_id: string
-) => {
-  return Jwt.sign(
-    { user_id, role_id, role_name, school_registration_id },
-    REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: process.env.JWT_REFRESH_EXPIRY || "7d",
-    }
-  );
-};
 
 export default authService;

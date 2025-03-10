@@ -12,7 +12,7 @@ export interface User extends Document {
   role_id: mongoose.Types.ObjectId;
   role_name: string;
   school_name: string;
-  school_registration_id?: mongoose.Types.ObjectId; // Null for Admin, required for others
+  reg_id?: mongoose.Types.ObjectId; // Null for Admin, required for others
   status: number; // 1: active, 0: inactive
   created_by?: mongoose.Types.ObjectId; // Null for first Admin
   updated_by?: mongoose.Types.ObjectId;
@@ -29,8 +29,9 @@ const adminBodySchema = z.object({
   email: commonValidations.email,
   password: commonValidations.password,
   school_name: commonValidations.name, // Admin registers with school name
-  school_registration_id: commonValidations.string
+  reg_id: commonValidations.string
 });
+
 
 // login validation schema 
 
@@ -55,8 +56,7 @@ const userBodySchema = z.object({
   name: commonValidations.name,
   email: commonValidations.email,
   password: commonValidations.password,
-  created_by: commonValidations.id.optional(), // Admin has `null`
-  updated_by: commonValidations.id.optional(),
+  role_name: commonValidations.string
 });
 
 // Wrap it in an object to match validation middleware structure
@@ -72,8 +72,9 @@ const userSchema = new Schema<User>(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
     role_id: { type: mongoose.Schema.Types.ObjectId, ref: "role", required: true },
-    role_name: { type: String},
-    school_registration_id: { type: String, required: true, trim: true, unique: true },
+    role_name: { type: String },
+    reg_id: { type: String, required: true, trim: true },
+    school_name: { type: String, required: true, trim: true },
     status: { type: Number, default: 1, enum: [0, 1] },
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null },
     updated_by: { type: mongoose.Schema.Types.ObjectId, ref: "user", default: null },

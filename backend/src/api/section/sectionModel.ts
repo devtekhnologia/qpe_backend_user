@@ -4,7 +4,7 @@ import { commonValidations } from "../../utils/commonValidations";
 
 export interface Data {
     name: string;
-    school_id: string;
+    reg_id: string;
     status: number;
     created_by: string;
     created_at: string;
@@ -13,7 +13,7 @@ export interface Data {
 
 const create = z.object({
     name: commonValidations.name,
-    school_id: commonValidations.id,
+    reg_id: commonValidations.id,
     user_id: commonValidations.id,
 });
 
@@ -38,9 +38,8 @@ const sectionSchema = new Schema({
         type: String,
         required: true,
     },
-    school_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref:"school",
+    reg_id: {
+        type: String,
         required: true,
     },
     status: {

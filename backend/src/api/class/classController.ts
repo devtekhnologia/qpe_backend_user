@@ -3,7 +3,7 @@ import { ServiceResponse } from "../../utils/response";
 import { classService } from "./classService";
 
 export const classController = {
-     create: async (req: Request): Promise<ServiceResponse> => {
+    create: async (req: Request): Promise<ServiceResponse> => {
         try {
             const classname = await classService.createClassName(req.body);
             return ServiceResponse.created(classname.message, classname.result);
@@ -14,8 +14,8 @@ export const classController = {
 
     fetch: async (req: Request): Promise<ServiceResponse> => {
         try {
-            const school_id = req.params.id;
-            const classname = await classService.getClassName(school_id);
+            const reg_id = req.params.id;
+            const classname = await classService.getClassName(reg_id);
             return ServiceResponse.success(classname.message, classname.result);
         } catch (error: any) {
             return ServiceResponse.badRequest(error.message);

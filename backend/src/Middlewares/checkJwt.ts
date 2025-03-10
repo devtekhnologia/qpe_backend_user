@@ -12,7 +12,7 @@ export const checkJWT = async (
   next: NextFunction
 ): Promise<any> => {
   try {
-    const urlsWithoutToken = ["/auth", "/role"];
+    const urlsWithoutToken = ["/role"];
     const skipVerify = urlsWithoutToken.includes(req.url.split("?")[0]);
     const authHeader = req.header("Authorization");
     if (skipVerify && !authHeader) {
