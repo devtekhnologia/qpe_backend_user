@@ -12,7 +12,7 @@ export const checkJWT = async (
   next: NextFunction
 ): Promise<any> => {
   try {
-    const urlsWithoutToken = ["/role", "/auth/login", "/auth/refresh-token"];
+    const urlsWithoutToken = ["/role", "/auth/login", "/auth/refresh-token", "/auth/register-admin"];
     const skipVerify = urlsWithoutToken.includes(req.url);
     const authHeader = req.header("Authorization");
     if (skipVerify) {
