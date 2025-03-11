@@ -6,12 +6,6 @@ const jwtSecret = process.env.JWT_SECRET || 'tekhnologia@9999';
 const ACCESS_TOKEN_SECRET = process.env.JWT_ACCESS_SECRET || "your_access_token_secret";
 const REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_SECRET || "your_refresh_token_secret";
 
-interface Token {
-  user_id?: String;
-  role_id?: String;
-  role_name?: String;
-  reg_id?: String;
-}
 
 export function verifyToken(token: string) {
   try {
@@ -21,7 +15,7 @@ export function verifyToken(token: string) {
   }
 }
 
-export const generateAccessToken = (payload: Token) => {
+export const generateAccessToken = (payload: any) => {
   return jwt.sign(
     payload,
     ACCESS_TOKEN_SECRET,
@@ -31,7 +25,7 @@ export const generateAccessToken = (payload: Token) => {
   );
 };
 
-export const generateRefreshToken = (payload: Token) => {
+export const generateRefreshToken = (payload: any) => {
   return jwt.sign(
     payload,
     REFRESH_TOKEN_SECRET,
