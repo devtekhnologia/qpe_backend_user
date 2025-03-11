@@ -23,12 +23,7 @@ export function verifyToken(token: string) {
 
 export const generateAccessToken = (payload: Token) => {
   return jwt.sign(
-    {
-      user_id: payload.user_id,
-      role_id: payload.role_id,
-      role_name: payload.role_name,
-      reg_id: payload.reg_id
-    },
+    payload,
     ACCESS_TOKEN_SECRET,
     {
       expiresIn: process.env.JWT_ACCESS_EXPIRY || "15m",
@@ -38,12 +33,7 @@ export const generateAccessToken = (payload: Token) => {
 
 export const generateRefreshToken = (payload: Token) => {
   return jwt.sign(
-    {
-      user_id: payload.user_id,
-      role_id: payload.role_id,
-      role_name: payload.role_name,
-      reg_id: payload.reg_id
-    },
+    payload,
     REFRESH_TOKEN_SECRET,
     {
       expiresIn: process.env.JWT_REFRESH_EXPIRY || "7d",
