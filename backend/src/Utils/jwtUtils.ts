@@ -1,4 +1,3 @@
-// src/utils/jwtUtils.ts
 import jwt from 'jsonwebtoken';
 
 // JWT Secret Keys (Should be stored in environment variables)
