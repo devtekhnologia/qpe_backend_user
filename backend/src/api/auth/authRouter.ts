@@ -1,9 +1,9 @@
 import { Router } from "express";
 import authController from "./authController";
 import { handleServiceResponse } from "../../utils/response";
-import { validateRequest } from "../../middlewares/validateMiddleware";
+import { validateRequest } from "../../Middlewares/validateMiddleware";
 import { adminRequestSchema, loginRequestSchema, userRequestSchema } from "./authModel";
-import { checkJWT } from "../../middlewares/checkJwt";
+import { checkJWT } from "../../Middlewares/checkJwt";
 
 export const authRouter = (() => {
     const router = Router();

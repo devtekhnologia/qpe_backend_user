@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { validateRequest } from "../../middlewares/validateMiddleware";
+import { validateRequest } from "../../Middlewares/validateMiddleware";
 import { sectionController } from "./sectionController";
 import { createSchema, idSchema, updateSchema } from "./sectionModel";
 import { handleServiceResponse } from "../../utils/response";

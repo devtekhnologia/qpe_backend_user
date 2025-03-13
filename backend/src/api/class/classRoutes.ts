@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { classController } from "./classController";
-import { validateRequest } from "../../middlewares/validateMiddleware";
+import { validateRequest } from "../../Middlewares/validateMiddleware";
 import { handleServiceResponse } from "../../utils/response";
 import { createSchema, idSchema, updateSchema } from "./classModel";
 

@@ -5,7 +5,7 @@ import { classRouter } from "../../api/class/classRoutes";
 import { classroomRouter } from "../../api/classroom/classroomRoutes";
 import { sectionRouter } from "../../api/section/sectionRoutes";
 import { subjectRouter } from "../../api/subject/subjectRoutes";
-import { checkJWT } from "../../middlewares/checkJwt";
+import { checkJWT } from "../../Middlewares/checkJwt";
 
 const router = express.Router();
 router.use(express.urlencoded({ extended: true }));

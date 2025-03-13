@@ -6,7 +6,7 @@ import masterRouter from "./src/routes/v1/masterRoute"
 
 import { errorHandler } from './src/utils/errorHandler';
 import { connectDB } from './src/initializers/mongoDb';
-import { apiLimiter } from './src/middlewares/rateLimiter';
+import { apiLimiter } from './src/Middlewares/rateLimiter';
 
 dotenv.config();
 const app: Application = express();

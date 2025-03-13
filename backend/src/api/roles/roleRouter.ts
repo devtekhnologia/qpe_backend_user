@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { roleRequestSchema } from "./roleModel";
-import { validateRequest } from "../../middlewares/validateMiddleware";
+import { validateRequest } from "../../Middlewares/validateMiddleware";
 import { handleServiceResponse } from "../../utils/response";
 import { roleController } from "./roleController";
 
