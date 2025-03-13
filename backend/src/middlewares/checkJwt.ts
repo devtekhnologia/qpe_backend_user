@@ -1,0 +1,35 @@
+import { NextFunction, Request, Response } from "express";
+import { verifyToken } from "../utils/jwtUtils";
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    client?: any;
+  }
+}
+export const checkJWT = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
+  try {
+    const urlsWithoutToken = ["/role", "/auth/login", "/auth/refresh-token", "/auth/register-admin"];
+    const skipVerify = urlsWithoutToken.includes(req.url);
+    const authHeader = req.header("Authorization");
+    if (skipVerify) {
+      return next();
+    }
+    if (!authHeader) {
+      return res.status(401).send({ message: "Authorization header missing" });
+    }
+    const token = authHeader.replace("Bearer ", "");
+    const payload: any = await verifyToken(token);
+    if (!payload) {
+      throw new Error("Invalid token")
+    }
+    req.client = payload;
+
+    next();
+  } catch (err) {
+    return res.status(401).send({ message: "Invalid Token" });
+  }
+};
